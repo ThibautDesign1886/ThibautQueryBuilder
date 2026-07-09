@@ -1,0 +1,663 @@
+:root {
+  --bg: #ffffff;
+  --workspace-bg: #ffffff;
+  --ink: #333a44;
+  --muted: #8a93a0;
+  --line: #e1e6ec;
+  --line-strong: #cdd5df;
+  --brand: #1f76bc;          /* Catalyst-style blue accent */
+  --brand-dark: #155a91;
+  --brand-light: #eaf3fb;
+  --panel-head-bg: #f3f5f8;
+  --panel-top: #2f8fd0;      /* blue line at the top of each panel */
+  --ok: #1d7a4d;
+  --danger: #b3261e;
+  --radius: 3px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Arial,
+    sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* --- Login / boot --------------------------------------------------------- */
+.boot-screen {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.login-screen {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #eef3fb 0%, #f7f9fc 100%);
+}
+.login-card {
+  width: 340px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--panel-top);
+  border-radius: 6px;
+  box-shadow: 0 8px 28px rgba(30, 50, 80, 0.12);
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+.login-sub { color: var(--muted); text-align: center; margin: 0 0 4px; }
+.login-card input {
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  font-size: 14px;
+}
+.login-btn {
+  padding: 10px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.login-btn:hover:not(:disabled) { background: var(--brand-dark); }
+.login-btn:disabled { opacity: 0.6; cursor: default; }
+.login-error {
+  background: #fdecea;
+  color: var(--danger);
+  border: 1px solid #f5c6c2;
+  border-radius: 4px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+/* --- Top bar + tabs ------------------------------------------------------- */
+/* Full-height app shell: header + tabs at top, footer at bottom, and the
+   workspace fills the space between. Nothing scrolls the page itself — each
+   panel scrolls inside its own box. */
+.catalyst {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 8px; flex: 1; }
+.topbar-user {
+  font-size: 13px;
+  color: var(--muted, #6b7280);
+  background: var(--surface, #f3f4f6);
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 20px;
+  padding: 4px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}
+.brand-mark {
+  color: var(--brand);
+  font-size: 24px;
+  line-height: 1;
+}
+.brand-name {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #2b3440;
+  text-transform: uppercase;
+}
+
+.tabbar {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 22px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--line);
+  background: #fafbfc;
+}
+.tab {
+  padding: 12px 4px;
+  color: var(--muted);
+  font-size: 14px;
+  border-bottom: 3px solid transparent;
+  cursor: default;
+}
+.tab.active {
+  color: var(--brand);
+  font-weight: 600;
+  border-bottom-color: var(--brand);
+}
+
+/* --- Workspace + layout --------------------------------------------------- */
+.workspace {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 24px;
+  background: var(--workspace-bg);
+}
+.workspace > .alert { flex: 0 0 auto; }
+
+.layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(300px, 30%) 1fr;
+  gap: 16px;
+}
+.layout-left { min-height: 0; height: 100%; display: flex; }
+.layout-right {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+}
+
+/* Make the boxes that share vertical space fill it, and scroll internally. */
+.row-two {
+  flex: 1 1 44%;
+  min-height: 0;
+  display: flex;
+  gap: 14px;
+}
+.row-two .grow { flex: 1 1 auto; min-width: 0; height: 100%; }
+.row-two .sorting-col { flex: 0 0 30%; max-width: 340px; height: 100%; }
+
+.layout-left > .panel,
+.row-two .grow > .panel,
+.row-two .sorting-col > .panel { height: 100%; }
+
+.panel-conditions { flex: 0 0 auto; max-height: 30%; }
+.panel-results { flex: 1 1 42%; min-height: 0; }
+
+/* --- Panels (blue-topped cards) ------------------------------------------ */
+.panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--panel-top);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(30, 40, 60, 0.05);
+  /* Flex column so the head stays put and the body scrolls inside the box. */
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.panel-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--panel-head-bg);
+  border-bottom: 1px solid var(--line);
+}
+.panel-head h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #4b5563;
+}
+.panel-head-note { color: var(--muted); font-size: 12px; }
+.panel-head-actions { display: flex; align-items: center; gap: 10px; }
+.panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 14px;
+}
+.panel-body.no-pad { padding: 0; }
+
+.muted { color: var(--muted); margin: 4px 0; }
+
+/* "+ Add ..." links */
+.add-link {
+  background: none;
+  border: none;
+  color: var(--brand);
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.add-link:disabled { color: var(--muted); cursor: default; }
+.add-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  font-size: 12px;
+  line-height: 1;
+}
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--brand);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0;
+}
+.link-btn:hover { text-decoration: underline; }
+.link-btn.tiny { font-size: 12px; }
+
+.cell-icon { color: #4a9d5b; margin-right: 6px; }
+
+/* --- Attribute panel (tree) ---------------------------------------------- */
+.datasource-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.datasource-row label { color: var(--muted); white-space: nowrap; }
+.datasource-row select {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: #f6f8fa;
+  color: var(--ink);
+}
+
+.attr-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.attr-toolbar input[type="search"] {
+  flex: 1;
+  padding: 7px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+}
+
+/* The attributes panel keeps its data-source/search controls fixed and lets
+   only the tree scroll. */
+.attr-panel .panel-body {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.tree {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  border-top: 1px solid var(--line);
+}
+.tree-group { border-bottom: 1px solid var(--line); }
+.tree-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px;
+}
+.tree-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 7px 4px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink);
+}
+.caret {
+  font-size: 9px;
+  color: var(--muted);
+  transition: transform 0.12s;
+  display: inline-block;
+}
+.caret.open { transform: rotate(90deg); }
+.tree-group-name { font-weight: 600; }
+.tree-group-count {
+  color: var(--muted);
+  font-size: 11px;
+  background: #eef1f5;
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+
+.tree-items { list-style: none; margin: 0; padding: 0 0 6px 26px; }
+.tree-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.tree-item:hover { background: var(--brand-light); }
+.tree-item input { accent-color: var(--brand); }
+.tree-item-name { flex: 1; }
+.tree-item-type {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+/* --- Grid tables (Columns) ------------------------------------------------ */
+.grid-table { width: 100%; border-collapse: collapse; }
+.grid-table th {
+  text-align: left;
+  font-weight: 600;
+  color: #5b6470;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcfd;
+  font-size: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.grid-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.grid-empty { color: var(--muted); text-align: center; padding: 18px; }
+.col-sorting { width: 130px; }
+.col-actions { width: 40px; text-align: right; }
+.title-input {
+  width: 100%;
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.col-sorting select {
+  width: 100%;
+  padding: 5px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+/* --- Sorting panel -------------------------------------------------------- */
+.sort-list { list-style: none; margin: 0; padding: 0; }
+.sort-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.sort-priority {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--brand-light);
+  color: var(--brand-dark);
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.sort-col { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dir-btn {
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 3px 8px;
+  cursor: pointer;
+  color: var(--brand-dark);
+  font-size: 12px;
+}
+.sort-move { display: flex; gap: 2px; }
+
+/* --- Analysis panel ------------------------------------------------------- */
+.stat-rowcount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 10px 12px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.stat-rowcount-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--brand-dark);
+  line-height: 1.1;
+}
+.stat-rowcount-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.stat-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.stat-table th {
+  text-align: left;
+  color: #5b6470;
+  font-weight: 600;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--line);
+}
+.stat-table td {
+  padding: 5px 6px;
+  border-bottom: 1px solid var(--line);
+}
+.stat-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.stat-table .strong { font-weight: 700; color: var(--brand-dark); }
+.stat-tag {
+  margin-left: 6px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  background: #eef1f5;
+  border-radius: 8px;
+  padding: 1px 6px;
+}
+
+/* --- Conditions ----------------------------------------------------------- */
+.conditions-intro {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  background: #fbfcfd;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  color: var(--brand-dark);
+}
+.logic-select {
+  padding: 3px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--brand-dark);
+  font-weight: 600;
+}
+.conditions-list { display: flex; flex-direction: column; gap: 6px; }
+.condition-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.condition-row.disabled { opacity: 0.5; }
+.cond-enable { accent-color: var(--brand); }
+.condition-row select,
+.condition-row input {
+  padding: 6px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: #fff;
+  font-size: 13px;
+}
+.condition-row select { min-width: 150px; }
+.condition-row input { min-width: 140px; flex: 1; }
+.range-inputs { display: flex; align-items: center; gap: 6px; flex: 1; }
+.range-sep { color: var(--muted); }
+.no-value { color: var(--muted); font-style: italic; }
+
+/* --- Buttons -------------------------------------------------------------- */
+.icon-btn {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: var(--radius);
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  color: var(--muted);
+}
+.icon-btn:hover:not(:disabled) { color: var(--brand); border-color: var(--brand); }
+.icon-btn:disabled { opacity: 0.4; cursor: default; }
+
+.execute-btn {
+  background: #fff;
+  border: 1px solid var(--brand);
+  color: var(--brand);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 6px 18px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.execute-btn:hover:not(:disabled) { background: var(--brand); color: #fff; }
+.execute-btn:disabled { opacity: 0.6; cursor: default; }
+
+.badge {
+  background: var(--brand-light);
+  color: var(--brand-dark);
+  border-radius: 10px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* --- Results table -------------------------------------------------------- */
+.table-scroll {
+  overflow: auto;
+  max-height: 420px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+/* In the Results box, let the table fill the panel and scroll instead of the
+   panel body, so the sticky header stays pinned to the box. */
+.panel-results .panel-body {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.panel-results .table-scroll {
+  max-height: none;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.results-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.results-table th,
+.results-table td {
+  text-align: left;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.results-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--brand);
+  color: #fff;
+}
+.results-table tbody tr:nth-child(even) { background: #f7fafc; }
+
+.empty-state {
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+  background: #fafbfe;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+}
+
+/* --- Alerts --------------------------------------------------------------- */
+.alert { padding: 9px 14px; border-radius: var(--radius); margin-bottom: 14px; font-size: 13px; }
+.alert-error { background: #fdecea; color: var(--danger); border: 1px solid #f5c6c2; }
+.alert-info { background: #e8f5ee; color: var(--ok); border: 1px solid #bfe3cd; }
+
+/* --- Footer --------------------------------------------------------------- */
+.footer-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 24px;
+  background: #fff;
+  border-top: 1px solid var(--line-strong);
+  box-shadow: 0 -1px 4px rgba(30, 40, 60, 0.06);
+}
+.footer-left, .footer-right { display: flex; align-items: center; gap: 10px; }
+.footer-input {
+  padding: 7px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  min-width: 180px;
+}
+.footer-select {
+  padding: 7px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: #fff;
+}
+.footer-btn {
+  padding: 7px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--brand-dark);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.footer-btn:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); }
+.footer-btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+.footer-btn.primary:hover:not(:disabled) { background: var(--brand-dark); }
+.footer-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* On narrow screens, drop the rigid full-height tiling and let the workspace
+   scroll normally so nothing gets clipped. */
+@media (max-width: 980px) {
+  .catalyst { height: auto; min-height: 100vh; overflow: visible; }
+  .workspace { overflow: visible; }
+  .layout { grid-template-columns: 1fr; }
+  .layout-left, .layout-right { height: auto; }
+  .row-two { flex-direction: column; }
+  .row-two .grow, .row-two .sorting-col {
+    max-width: none;
+    width: 100%;
+    height: auto;
+  }
+  .panel-conditions, .panel-results { max-height: none; }
+  .tree { max-height: 360px; }
+}

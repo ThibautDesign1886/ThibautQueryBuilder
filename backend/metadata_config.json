@@ -1,0 +1,572 @@
+{
+  "table_name": "dbo.SalesQueryBuilder_MasterTable",
+  "fields": [
+    {
+      "display_name": "Master Table Key",
+      "column_name": "MasterTable_Key",
+      "data_type": "number",
+      "group": "Identifiers",
+      "aggregate": "count"
+    },
+    {
+      "display_name": "Transaction Id",
+      "column_name": "TransactionId",
+      "data_type": "string",
+      "group": "Identifiers",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Site Id",
+      "column_name": "SiteId",
+      "data_type": "string",
+      "group": "Identifiers",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Invoice Number",
+      "column_name": "InvoiceNumber",
+      "data_type": "string",
+      "group": "Invoice",
+      "aggregate": "distinct"
+    },
+    {
+      "display_name": "Invoice Line Number",
+      "column_name": "InvoiceLineNumber",
+      "data_type": "number",
+      "group": "Invoice",
+      "aggregate": "count"
+    },
+    {
+      "display_name": "Invoice Date",
+      "column_name": "InvoiceDate",
+      "data_type": "date",
+      "group": "Invoice",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Sales Order Number",
+      "column_name": "SalesOrderNumber",
+      "data_type": "string",
+      "group": "Sales Order",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Sales Order Line",
+      "column_name": "SalesOrderLine",
+      "data_type": "number",
+      "group": "Sales Order",
+      "aggregate": "count"
+    },
+    {
+      "display_name": "Sales Order Release",
+      "column_name": "SalesOrderRelease",
+      "data_type": "string",
+      "group": "Sales Order",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Customer Number",
+      "column_name": "CustomerNumber",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Customersequence",
+      "column_name": "customersequence",
+      "data_type": "number",
+      "group": "Customer",
+      "aggregate": "count"
+    },
+    {
+      "display_name": "Currency Code",
+      "column_name": "CurrencyCode",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Customer Country",
+      "column_name": "CustomerCountry",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Shipto City",
+      "column_name": "ShiptoCity",
+      "data_type": "string",
+      "group": "Ship To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Shiptoaddress1",
+      "column_name": "shiptoaddress1",
+      "data_type": "string",
+      "group": "Ship To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Shiptoaddress2",
+      "column_name": "shiptoaddress2",
+      "data_type": "string",
+      "group": "Ship To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Shiptostate",
+      "column_name": "shiptostate",
+      "data_type": "string",
+      "group": "Ship To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Shiptozipcode",
+      "column_name": "shiptozipcode",
+      "data_type": "string",
+      "group": "Ship To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Shiptocounty",
+      "column_name": "shiptocounty",
+      "data_type": "string",
+      "group": "Ship To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Ship To Email Address",
+      "column_name": "ShipToEmailAddress",
+      "data_type": "string",
+      "group": "Ship To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Customer Email Address",
+      "column_name": "CustomerEmailAddress",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Customer Phone",
+      "column_name": "CustomerPhone",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Customer Group",
+      "column_name": "CustomerGroup",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Customer Location Area",
+      "column_name": "CustomerLocationArea",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Customer Ranking",
+      "column_name": "CustomerRanking",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Customer End Type",
+      "column_name": "CustomerEndType",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Master Account Number",
+      "column_name": "MasterAccountNumber",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Master Account Name",
+      "column_name": "MasterAccountName",
+      "data_type": "string",
+      "group": "Customer",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To Customer Number",
+      "column_name": "BillToCustomerNumber",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To Customer Name",
+      "column_name": "BillToCustomerName",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To Address1",
+      "column_name": "BillToAddress1",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To Address2",
+      "column_name": "BillToAddress2",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To City",
+      "column_name": "BillToCity",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To State",
+      "column_name": "BillToState",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To Zippostal Code",
+      "column_name": "BillToZIPPostalCode",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To County",
+      "column_name": "BillToCounty",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To Country",
+      "column_name": "BillToCountry",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To External Email",
+      "column_name": "BillToExternalEmail",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To Phone",
+      "column_name": "BillToPhone",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To Price Code",
+      "column_name": "BillToPriceCode",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To Price Code Description",
+      "column_name": "BillToPriceCodeDescription",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Terms Code",
+      "column_name": "TermsCode",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Bill To Ranking",
+      "column_name": "BillToRanking",
+      "data_type": "string",
+      "group": "Bill To",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Item Number",
+      "column_name": "ItemNumber",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Item Description",
+      "column_name": "ItemDescription",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Alternate Item Number",
+      "column_name": "AlternateItemNumber",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Product Code",
+      "column_name": "ProductCode",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Product Code Description",
+      "column_name": "ProductCodeDescription",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Pmtcode",
+      "column_name": "PMTCode",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Book Collection",
+      "column_name": "BookCollection",
+      "data_type": "string",
+      "group": "Other",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Associated Book",
+      "column_name": "AssociatedBook",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Launch Date",
+      "column_name": "LaunchDate",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Launch Date Year",
+      "column_name": "LaunchDateYear",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Family Code",
+      "column_name": "FamilyCode",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Family Code Description",
+      "column_name": "FamilyCodeDescription",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Unit Of Measure",
+      "column_name": "UnitOfMeasure",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Unit Of Measure Description",
+      "column_name": "UnitOfMeasureDescription",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Reservable",
+      "column_name": "Reservable",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Item Status",
+      "column_name": "ItemStatus",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Item Brand",
+      "column_name": "ItemBrand",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Product Type",
+      "column_name": "ProductType",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Color Code",
+      "column_name": "ColorCode",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Brand",
+      "column_name": "Brand",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Category",
+      "column_name": "Category",
+      "data_type": "string",
+      "group": "Item & Product",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Historical Salesperson Number",
+      "column_name": "HistoricalSalespersonNumber",
+      "data_type": "string",
+      "group": "Salesperson & Manager",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Historical Salesperson Name",
+      "column_name": "HistoricalSalespersonName",
+      "data_type": "string",
+      "group": "Salesperson & Manager",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Historical Salesperson Email",
+      "column_name": "HistoricalSalespersonEmail",
+      "data_type": "string",
+      "group": "Salesperson & Manager",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Sales Manager Number",
+      "column_name": "SalesManagerNumber",
+      "data_type": "string",
+      "group": "Salesperson & Manager",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Sales Manager Name",
+      "column_name": "SalesManagerName",
+      "data_type": "string",
+      "group": "Salesperson & Manager",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Sales Manager Email",
+      "column_name": "SalesManagerEmail",
+      "data_type": "string",
+      "group": "Salesperson & Manager",
+      "aggregate": "none"
+    },
+    {
+      "display_name": "Invoice Quantity",
+      "column_name": "InvoiceQuantity",
+      "data_type": "number",
+      "group": "Invoice",
+      "aggregate": "sum"
+    },
+    {
+      "display_name": "Unit Price",
+      "column_name": "UnitPrice",
+      "data_type": "number",
+      "group": "Financials",
+      "aggregate": "sum"
+    },
+    {
+      "display_name": "Exchange Rate",
+      "column_name": "ExchangeRate",
+      "data_type": "number",
+      "group": "Financials",
+      "aggregate": "sum"
+    },
+    {
+      "display_name": "Invoice Amount",
+      "column_name": "InvoiceAmount",
+      "data_type": "number",
+      "group": "Invoice",
+      "aggregate": "sum"
+    },
+    {
+      "display_name": "Unit Cost",
+      "column_name": "UnitCost",
+      "data_type": "number",
+      "group": "Financials",
+      "aggregate": "sum"
+    },
+    {
+      "display_name": "Cost Amount",
+      "column_name": "CostAmount",
+      "data_type": "number",
+      "group": "Financials",
+      "aggregate": "sum"
+    },
+    {
+      "display_name": "Material Cost",
+      "column_name": "MaterialCost",
+      "data_type": "number",
+      "group": "Financials",
+      "aggregate": "sum"
+    },
+    {
+      "display_name": "Product Material Margin",
+      "column_name": "ProductMaterialMargin",
+      "data_type": "number",
+      "group": "Item & Product",
+      "aggregate": "sum"
+    },
+    {
+      "display_name": "Invoice Discount Amount",
+      "column_name": "InvoiceDiscountAmount",
+      "data_type": "number",
+      "group": "Invoice",
+      "aggregate": "sum"
+    },
+    {
+      "display_name": "Miscellaneous Charges",
+      "column_name": "MiscellaneousCharges",
+      "data_type": "number",
+      "group": "Financials",
+      "aggregate": "sum"
+    },
+    {
+      "display_name": "Freight Amount",
+      "column_name": "FreightAmount",
+      "data_type": "number",
+      "group": "Financials",
+      "aggregate": "sum"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+backend/.env
+backend/report_templates.json
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.env
+
+# Deployment artifacts
+deploy.zip
+*.zip
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
