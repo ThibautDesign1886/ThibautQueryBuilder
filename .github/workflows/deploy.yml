@@ -73,6 +73,12 @@ jobs:
         working-directory: backend
 
       # --- Package for deployment -------------------------------------------
+      # Pre-install Python deps into backend/site-packages so startup.sh
+      # doesn't need to run pip at all — container starts in seconds.
+      - name: Pre-install Python dependencies
+        run: pip install -r requirements.txt --target site-packages --quiet
+        working-directory: backend
+
       - name: Create deployment zip
         run: |
           zip -r deploy.zip \
@@ -84,6 +90,7 @@ jobs:
             -x "backend/report_templates.json" \
             -x "backend/__pycache__/*" \
             -x "backend/app/__pycache__/*" \
+            -x "backend/site-packages/*.dist-info/*" \
             -x "*.pyc"
 
       - name: Upload deployment artifact

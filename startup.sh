@@ -10,7 +10,7 @@
 # ---------------------------------------------------------------------------
 
 ODBC_MARKER="/home/.odbc_driver_installed"
-VENV="/home/site/wwwroot/.venv"
+SITE="/home/site/wwwroot"
 
 # ---------------------------------------------------------------------------
 # Install ODBC driver in the background (first run only)
@@ -32,23 +32,16 @@ if [ ! -f "$ODBC_MARKER" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Install / refresh Python dependencies into a cached venv on /home
-# (persisted across restarts, much faster on subsequent starts)
+# Python deps are pre-bundled in backend/site-packages by the CI build.
+# Just point Python at them — no pip install needed at runtime.
 # ---------------------------------------------------------------------------
-if [ ! -d "$VENV" ]; then
-    echo "[startup] Creating virtual environment..."
-    python -m venv "$VENV"
-fi
-
-source "$VENV/bin/activate"
-echo "[startup] Installing Python dependencies..."
-pip install -r /home/site/wwwroot/backend/requirements.txt --quiet --no-cache-dir
+export PYTHONPATH="$SITE/backend/site-packages:$PYTHONPATH"
 
 # ---------------------------------------------------------------------------
-# Start the application
+# Start the application immediately
 # ---------------------------------------------------------------------------
 echo "[startup] Starting Thibaut Query Builder..."
-cd /home/site/wwwroot/backend
+cd "$SITE/backend"
 exec uvicorn app.main:app \
     --host 0.0.0.0 \
     --port 8000 \
