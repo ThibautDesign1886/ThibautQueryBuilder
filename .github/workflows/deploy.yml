@@ -119,6 +119,19 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # Look up the staging slot's actual hostname (Azure generates a unique
+      # suffix like thibautquerybuilder-staging-abc123.centralus-01.azurewebsites.net)
+      - name: Get staging hostname
+        id: staging
+        run: |
+          HOST=$(az webapp show \
+            --name "${{ vars.APP_NAME }}" \
+            --resource-group "${{ vars.RESOURCE_GROUP }}" \
+            --slot staging \
+            --query "defaultHostName" -o tsv)
+          echo "host=$HOST" >> $GITHUB_OUTPUT
+          echo "Staging host: $HOST"
+
       # Deploy to the staging slot (not production yet)
       - name: Deploy to staging slot
         run: |
@@ -135,10 +148,10 @@ jobs:
       # several minutes. Subsequent deploys are faster but still need ~30s.
       - name: Wait for staging to be healthy
         run: |
-          URL="https://${{ vars.APP_NAME }}-staging.azurewebsites.net/api/health"
+          URL="https://${{ steps.staging.outputs.host }}/api/health"
           echo "Waiting for staging to be healthy: $URL"
           for i in $(seq 1 40); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL")
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL" || echo "000")
             echo "Attempt $i/40: HTTP $STATUS"
             if [ "$STATUS" = "200" ]; then
               echo "Staging is healthy."
