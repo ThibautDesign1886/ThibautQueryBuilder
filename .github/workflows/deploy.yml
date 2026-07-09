@@ -81,6 +81,7 @@ jobs:
 
       - name: Create deployment zip
         run: |
+          chmod +x startup.sh
           zip -r deploy.zip \
             backend \
             frontend/dist \

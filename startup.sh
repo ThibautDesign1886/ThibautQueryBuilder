@@ -42,7 +42,7 @@ export PYTHONPATH="$SITE/backend/site-packages:$PYTHONPATH"
 # ---------------------------------------------------------------------------
 echo "[startup] Starting Thibaut Query Builder..."
 cd "$SITE/backend"
-exec uvicorn app.main:app \
+exec python -m uvicorn app.main:app \
     --host 0.0.0.0 \
     --port 8000 \
     --workers 2 \
