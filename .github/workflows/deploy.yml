@@ -127,6 +127,23 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # WEBSITE_RUN_FROM_PACKAGE=1 breaks slot swaps (each slot's zip is stored
+      # in its own local storage; after swap the path is invalid on the other slot).
+      # Remove it from both slots so zip deploy extracts to writable wwwroot instead.
+      - name: Remove WEBSITE_RUN_FROM_PACKAGE from both slots
+        run: |
+          az webapp config appsettings delete \
+            --name "${{ vars.APP_NAME }}" \
+            --resource-group "${{ vars.RESOURCE_GROUP }}" \
+            --setting-names WEBSITE_RUN_FROM_PACKAGE \
+            --output none || true
+          az webapp config appsettings delete \
+            --name "${{ vars.APP_NAME }}" \
+            --resource-group "${{ vars.RESOURCE_GROUP }}" \
+            --slot staging \
+            --setting-names WEBSITE_RUN_FROM_PACKAGE \
+            --output none || true
+
       # Look up the staging slot's actual hostname (Azure generates a unique
       # suffix like thibautquerybuilder-staging-abc123.centralus-01.azurewebsites.net)
       - name: Get staging hostname
