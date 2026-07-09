@@ -114,7 +114,6 @@ jobs:
 
     environment:
       name: production
-      url: https://${{ vars.APP_NAME }}.azurewebsites.net
 
     steps:
       - name: Download deployment artifact
