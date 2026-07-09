@@ -130,21 +130,24 @@ jobs:
             --src-path deploy.zip \
             --async false
 
-      # Give the app a moment to start up after deploy
-      - name: Wait for staging to warm up
-        run: sleep 45
-
-      # Verify the staging slot is healthy before swapping
-      - name: Smoke test staging
+      # Poll the staging health endpoint until the app is up (or 10 min timeout).
+      # The first deploy installs the ODBC driver + pip packages, which takes
+      # several minutes. Subsequent deploys are faster but still need ~30s.
+      - name: Wait for staging to be healthy
         run: |
           URL="https://${{ vars.APP_NAME }}-staging.azurewebsites.net/api/health"
-          echo "Testing $URL ..."
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
-          if [ "$STATUS" != "200" ]; then
-            echo "ERROR: Staging health check returned HTTP $STATUS — aborting swap."
-            exit 1
-          fi
-          echo "Staging health check passed (HTTP $STATUS)."
+          echo "Waiting for staging to be healthy: $URL"
+          for i in $(seq 1 40); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$URL")
+            echo "Attempt $i/40: HTTP $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "Staging is healthy."
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "ERROR: Staging did not become healthy within 10 minutes."
+          exit 1
 
       # Swap staging into production (zero-downtime)
       - name: Swap staging → production
