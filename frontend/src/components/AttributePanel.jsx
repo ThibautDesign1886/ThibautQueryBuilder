@@ -1,10 +1,12 @@
-// Left "Entities & Attributes" panel: a fixed single Data Source, a search box,
-// and the master-table attributes bucketed into collapsible groups. Checking an
-// attribute adds it to the report Columns.
+// Left "Entities & Attributes" panel: a Data Source dropdown, a search box,
+// and the selected model's attributes bucketed into collapsible groups.
+// Checking an attribute adds it to the report Columns.
 import { useMemo, useState } from "react";
 
 export default function AttributePanel({
-  dataSourceLabel,
+  dataSources,
+  selectedModel,
+  onModelChange,
   fields,
   selected,
   onToggle,
@@ -47,8 +49,18 @@ export default function AttributePanel({
       <div className="panel-body">
         <div className="datasource-row">
           <label>Data Source</label>
-          <select value={dataSourceLabel} disabled>
-            <option>{dataSourceLabel}</option>
+          <select
+            value={selectedModel}
+            onChange={(e) => onModelChange(e.target.value)}
+          >
+            {dataSources.length > 0
+              ? dataSources.map((ds) => (
+                  <option key={ds.key} value={ds.key}>
+                    {ds.label}
+                  </option>
+                ))
+              : <option value={selectedModel}>{selectedModel}</option>
+            }
           </select>
         </div>
 

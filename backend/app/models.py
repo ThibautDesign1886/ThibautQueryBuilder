@@ -27,6 +27,8 @@ class Sort(BaseModel):
 class QueryRequest(BaseModel):
     """Shared shape for /preview and /export."""
 
+    # Which data model to query (must match a key in metadata_config.json).
+    model: str = "sales"
     columns: List[str] = PydanticField(
         default_factory=list,
         description="Whitelisted column names to include in the report.",
@@ -78,6 +80,8 @@ class FieldOut(BaseModel):
 class TemplateConfig(BaseModel):
     """The saved report definition (columns + titles + filters + logic + sorts)."""
 
+    # Which data model this template targets.
+    model: str = "sales"
     columns: List[str] = PydanticField(default_factory=list)
     filters: List[Filter] = PydanticField(default_factory=list)
     filter_logic: str = "AND"

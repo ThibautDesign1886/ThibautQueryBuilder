@@ -14,7 +14,8 @@ const nextId = () => ++filterId;
 
 export default function App() {
   const [fields, setFields] = useState([]);
-  const [dataSourceLabel, setDataSourceLabel] = useState("Master Table");
+  const [dataSources, setDataSources] = useState([]); // [{key, label}]
+  const [selectedModel, setSelectedModel] = useState("sales");
 
   const [selected, setSelected] = useState([]); // ordered column_names
   const [titles, setTitles] = useState({}); // column_name -> custom title
@@ -113,15 +114,38 @@ export default function App() {
   useEffect(() => {
     if (!authed) return;
     setLoadingFields(true);
-    Promise.all([api.getFields(), api.getDataSource()])
-      .then(([fieldData, ds]) => {
+    Promise.all([api.getFields(selectedModel), api.getDataSource()])
+      .then(([fieldData, dsList]) => {
         setFields(fieldData);
-        if (ds?.label) setDataSourceLabel(ds.label);
+        if (Array.isArray(dsList)) setDataSources(dsList);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoadingFields(false));
     refreshTemplates();
   }, [authed]);
+
+  // --- switch data model -----------------------------------------------------
+  async function handleModelChange(modelKey) {
+    if (modelKey === selectedModel) return;
+    setSelectedModel(modelKey);
+    setSelected([]);
+    setSorts([]);
+    setTitles({});
+    setFilters([]);
+    setResult(null);
+    setAnalysis(null);
+    setError("");
+    setNotice("");
+    setLoadingFields(true);
+    try {
+      const fieldData = await api.getFields(modelKey);
+      setFields(fieldData);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoadingFields(false);
+    }
+  }
 
   function refreshTemplates() {
     api.listTemplates().then(setTemplates).catch(() => {});
@@ -257,6 +281,7 @@ export default function App() {
       if (t && t !== fieldByCol[col]?.display_name) titleOverrides[col] = t;
     }
     return {
+      model: selectedModel,
       columns: validColumns,
       filters: buildFilterPayload(),
       filter_logic: logic,
@@ -320,6 +345,7 @@ export default function App() {
       await api.saveTemplate({
         name: templateName.trim(),
         config: {
+          model: selectedModel,
           columns: payload.columns,
           filters: payload.filters,
           filter_logic: payload.filter_logic,
@@ -343,10 +369,27 @@ export default function App() {
       const t = await api.loadTemplate(id);
       const cfg = t.config;
 
+      // If the template targets a different model, switch to it first.
+      let currentFields = fields;
+      const templateModel = cfg.model || "sales";
+      if (templateModel !== selectedModel) {
+        setSelectedModel(templateModel);
+        setLoadingFields(true);
+        try {
+          currentFields = await api.getFields(templateModel);
+          setFields(currentFields);
+        } catch (e) {
+          setError(e.message);
+          return;
+        } finally {
+          setLoadingFields(false);
+        }
+      }
+
       // A saved report may reference fields that have since been removed from
       // the metadata. Drop anything no longer available so the report still
       // loads; the user can re-save to make the cleanup permanent.
-      const known = new Set(fields.map((f) => f.column_name));
+      const known = new Set(currentFields.map((f) => f.column_name));
       const dropped = new Set();
 
       const validColumns = (cfg.columns || []).filter((c) => {
@@ -449,7 +492,9 @@ export default function App() {
           <div className="layout">
             <div className="layout-left">
               <AttributePanel
-                dataSourceLabel={dataSourceLabel}
+                dataSources={dataSources}
+                selectedModel={selectedModel}
+                onModelChange={handleModelChange}
                 fields={fields}
                 selected={selected}
                 onToggle={toggleColumn}

@@ -77,8 +77,8 @@ export async function getDataSource() {
   return handle(await fetch(`${BASE}/datasource`, { headers: headers() }));
 }
 
-export async function getFields() {
-  return handle(await fetch(`${BASE}/fields`, { headers: headers() }));
+export async function getFields(model = "sales") {
+  return handle(await fetch(`${BASE}/fields?model=${encodeURIComponent(model)}`, { headers: headers() }));
 }
 
 export async function preview(payload) {

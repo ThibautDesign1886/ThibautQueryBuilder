@@ -31,7 +31,7 @@ and executed as parameterized queries (see query_builder.py).
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import APIRouter, FastAPI, HTTPException, Request
+from fastapi import APIRouter, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -40,7 +40,7 @@ from pydantic import BaseModel
 from . import excel_export, templates_store
 from .config import get_settings
 from .database import run_select
-from .metadata import get_metadata
+from .metadata import get_all_models, get_metadata
 from .models import (
     AnalysisResponse,
     ColumnStat,
@@ -177,18 +177,22 @@ def health() -> dict:
 
 
 @api.get("/datasource")
-def get_datasource() -> dict:
-    """The single (fixed) master table used as the report data source."""
-    metadata = get_metadata()
-    table = metadata.table_name
-    label = table.split(".")[-1].replace("_", " ")
-    return {"table_name": table, "label": label}
+def get_datasource() -> list:
+    """Return all available data models as [{key, label}]."""
+    models = get_all_models()
+    return [
+        {"key": key, "label": meta.display_name or key.title()}
+        for key, meta in models.items()
+    ]
 
 
 @api.get("/fields", response_model=list[FieldOut])
-def get_fields() -> list[FieldOut]:
-    """Return the whitelisted attributes for the master table."""
-    metadata = get_metadata()
+def get_fields(model: str = Query(default="sales")) -> list[FieldOut]:
+    """Return the whitelisted attributes for the given model (default: sales)."""
+    try:
+        metadata = get_metadata(model)
+    except KeyError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return [
         FieldOut(
             display_name=f.display_name,
@@ -202,7 +206,10 @@ def get_fields() -> list[FieldOut]:
 
 def _run_query(request: QueryRequest, row_limit: int):
     """Shared validation + execution for /preview and /export."""
-    metadata = get_metadata()
+    try:
+        metadata = get_metadata(request.model)
+    except KeyError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     try:
         built = build_query(metadata, request, row_limit=row_limit)
     except QueryValidationError as exc:
@@ -253,7 +260,10 @@ def analyze(request: QueryRequest) -> AnalysisResponse:
     (sum / count / unique) — e.g. total Invoice Amount, total Invoice Quantity,
     unique Invoice Numbers.
     """
-    metadata = get_metadata()
+    try:
+        metadata = get_metadata(request.model)
+    except KeyError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     try:
         built = build_aggregate_query(metadata, request)
     except QueryValidationError as exc:
@@ -333,11 +343,15 @@ def create_template(payload: TemplateCreate) -> TemplateDetail:
 
     # Validate the saved config references only approved columns/operators by
     # building (but not running) the query first.
-    metadata = get_metadata()
+    try:
+        metadata = get_metadata(payload.config.model)
+    except KeyError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     try:
         build_query(
             metadata,
             QueryRequest(
+                model=payload.config.model,
                 columns=payload.config.columns,
                 filters=payload.config.filters,
                 filter_logic=payload.config.filter_logic,
