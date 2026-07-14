@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import * as XLSX from "xlsx";
 import * as api from "./api";
 import AttributePanel from "./components/AttributePanel";
 import ColumnsPanel from "./components/ColumnsPanel";
@@ -326,6 +327,30 @@ export default function App() {
       setError("Select at least one column.");
       return;
     }
+
+    // If data is already loaded from Execute, export client-side instantly.
+    if (result && result.rows && result.rows.length > 0) {
+      const headers = result.display_names;
+      const ws = XLSX.utils.aoa_to_sheet([headers, ...result.rows]);
+      // Style header row bold with blue fill
+      const range = XLSX.utils.decode_range(ws["!ref"]);
+      for (let col = range.s.c; col <= range.e.c; col++) {
+        const cell = ws[XLSX.utils.encode_cell({ r: 0, c: col })];
+        if (cell) {
+          cell.s = {
+            font: { bold: true, color: { rgb: "FFFFFF" } },
+            fill: { fgColor: { rgb: "2F5597" } },
+          };
+        }
+      }
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Report");
+      const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+      XLSX.writeFile(wb, `report_${ts}.xlsx`);
+      return;
+    }
+
+    // No cached data — fall back to server export (runs full query).
     setExporting(true);
     try {
       await api.exportExcel(buildPayload());

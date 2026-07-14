@@ -37,6 +37,13 @@ END
 GO
 
 -- =============================================================================
+-- Permissions
+-- sfread needs SELECT, INSERT, UPDATE to save and load templates.
+-- =============================================================================
+GRANT SELECT, INSERT, UPDATE ON dbo.report_templates TO sfread;
+GO
+
+-- =============================================================================
 -- Optional: migrate existing templates from the JSON file.
 -- Replace the VALUES rows below with your actual templates if needed.
 -- =============================================================================
