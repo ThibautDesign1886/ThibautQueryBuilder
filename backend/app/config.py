@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     # --- Application -----------------------------------------------------------
     metadata_config_path: str = "metadata_config.json"
     preview_row_limit: int = 100
-    export_row_limit: int = 50000
+    export_row_limit: int = 500000
     # Templates are persisted to dbo.report_templates in SQL Server.
     # The DB user needs SELECT, INSERT, UPDATE on that table.
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"

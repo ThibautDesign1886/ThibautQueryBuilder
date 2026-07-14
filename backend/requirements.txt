@@ -4,7 +4,7 @@ pydantic==2.10.4
 pydantic-settings==2.7.1
 pyodbc==5.2.0
 pandas==2.2.3
-xlsxwriter==3.2.0
+xlsxwriter==3.2.9
 python-dotenv==1.0.1
 # Application Insights (OpenTelemetry-based Azure Monitor distro)
 azure-monitor-opentelemetry==1.6.4
