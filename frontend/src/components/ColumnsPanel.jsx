@@ -1,5 +1,7 @@
-// "Columns" panel: the selected report columns with an editable Title,
-// per-column Sorting, and up/down reordering.
+// "Columns" panel: selected report columns with title editing, sorting,
+// up/down buttons, and drag-to-reorder.
+import { useRef, useState } from "react";
+
 export default function ColumnsPanel({
   columns,
   titles,
@@ -9,6 +11,36 @@ export default function ColumnsPanel({
   onRemove,
   onMove,
 }) {
+  const [dragOver, setDragOver] = useState(null);
+  const dragSrc = useRef(null);
+
+  function handleDragStart(e, idx) {
+    dragSrc.current = idx;
+    e.dataTransfer.effectAllowed = "move";
+    // Minimal ghost — just the row itself
+    e.dataTransfer.setDragImage(e.currentTarget, 0, 0);
+  }
+
+  function handleDragOver(e, idx) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (idx !== dragSrc.current) setDragOver(idx);
+  }
+
+  function handleDrop(e, idx) {
+    e.preventDefault();
+    if (dragSrc.current !== null && dragSrc.current !== idx) {
+      onMove(dragSrc.current, idx);
+    }
+    setDragOver(null);
+    dragSrc.current = null;
+  }
+
+  function handleDragEnd() {
+    setDragOver(null);
+    dragSrc.current = null;
+  }
+
   return (
     <section className="panel">
       <div className="panel-head">
@@ -21,7 +53,7 @@ export default function ColumnsPanel({
         <table className="grid-table">
           <thead>
             <tr>
-              <th style={{ width: 52 }} />
+              <th style={{ width: 68 }} />
               <th>Expression</th>
               <th>Title</th>
               <th className="col-sorting">Sorting</th>
@@ -37,27 +69,34 @@ export default function ColumnsPanel({
               </tr>
             )}
             {columns.map((f, idx) => (
-              <tr key={f.column_name}>
+              <tr
+                key={f.column_name}
+                draggable
+                onDragStart={(e) => handleDragStart(e, idx)}
+                onDragOver={(e) => handleDragOver(e, idx)}
+                onDrop={(e) => handleDrop(e, idx)}
+                onDragEnd={handleDragEnd}
+                className={`col-row${dragOver === idx ? " col-row-drop" : ""}`}
+              >
                 <td style={{ padding: "4px 6px" }}>
-                  <div className="col-move">
-                    <button
-                      type="button"
-                      className="icon-btn"
-                      title="Move up"
-                      disabled={idx === 0}
-                      onClick={() => onMove(idx, idx - 1)}
-                    >
-                      ▲
-                    </button>
-                    <button
-                      type="button"
-                      className="icon-btn"
-                      title="Move down"
-                      disabled={idx === columns.length - 1}
-                      onClick={() => onMove(idx, idx + 1)}
-                    >
-                      ▼
-                    </button>
+                  <div className="col-controls">
+                    <span className="col-drag-handle" title="Drag to reorder">⠿</span>
+                    <div className="col-move">
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        title="Move up"
+                        disabled={idx === 0}
+                        onClick={() => onMove(idx, idx - 1)}
+                      >▲</button>
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        title="Move down"
+                        disabled={idx === columns.length - 1}
+                        onClick={() => onMove(idx, idx + 1)}
+                      >▼</button>
+                    </div>
                   </div>
                 </td>
                 <td>
@@ -88,9 +127,7 @@ export default function ColumnsPanel({
                     className="icon-btn"
                     title="Remove column"
                     onClick={() => onRemove(f.column_name)}
-                  >
-                    ✕
-                  </button>
+                  >✕</button>
                 </td>
               </tr>
             ))}

@@ -1,74 +1,145 @@
-// "Conditions" panel: the filters, phrased as "Select records where all/any of
-// the following apply". Each condition can be enabled/disabled with a checkbox.
-import { useEffect, useState } from "react";
+// "Conditions" panel
+import { useEffect, useRef, useState } from "react";
 import { inputType, operatorMeta, operatorsForType } from "../operators";
 import * as api from "../api";
 
-// Cache distinct values per model+column so we don't re-fetch on every render.
 const _distinctCache = {};
 
 function useDistinctValues(model, column, enabled) {
   const key = `${model}::${column}`;
-  const [values, setValues] = useState(_distinctCache[key] ?? null);
+  const [state, setState] = useState({ loading: false, values: null });
 
   useEffect(() => {
     if (!enabled || !column) return;
     if (_distinctCache[key] !== undefined) {
-      setValues(_distinctCache[key]);
+      setState({ loading: false, values: _distinctCache[key] });
       return;
     }
-    api.getDistinct(model, column).then((data) => {
-      _distinctCache[key] = data; // [] means too many (>40)
-      setValues(data);
-    }).catch(() => {
-      _distinctCache[key] = [];
-      setValues([]);
-    });
+    setState({ loading: true, values: null });
+    api.getDistinct(model, column)
+      .then((data) => {
+        _distinctCache[key] = data;
+        setState({ loading: false, values: data });
+      })
+      .catch(() => {
+        _distinctCache[key] = [];
+        setState({ loading: false, values: [] });
+      });
   }, [key, enabled]);
 
-  return values; // null = loading, [] = too many / use text, [...] = show dropdown
+  return state;
 }
 
-function InListInput({ model, column, filter, onChange }) {
-  const isInList = filter.operator === "in_list";
-  const distinctValues = useDistinctValues(model, column, isInList);
-
-  if (!isInList) return null;
+function InListPicker({ model, column, filter, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const ref = useRef(null);
+  const { loading, values } = useDistinctValues(model, column, true);
 
   const selected = Array.isArray(filter.values) ? filter.values.map(String) : [];
 
-  // Show multi-select checkboxes when we have ≤40 distinct values
-  if (distinctValues && distinctValues.length > 0) {
-    const toggleValue = (val) => {
-      const next = selected.includes(val)
-        ? selected.filter((v) => v !== val)
-        : [...selected, val];
-      onChange({ values: next, listText: next.join(",") });
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const toggle = (val) => {
+    const next = selected.includes(val)
+      ? selected.filter((v) => v !== val)
+      : [...selected, val];
+    onChange({ values: next, listText: next.join(",") });
+  };
+
+  const filtered = values
+    ? values.filter((v) => String(v).toLowerCase().includes(search.toLowerCase()))
+    : [];
+
+  // If too many distinct values (empty array returned), fall back to text
+  if (values !== null && values.length === 0 && !loading) {
     return (
-      <div className="in-list-dropdown">
-        {distinctValues.map((val) => (
-          <label key={val} className="in-list-option">
-            <input
-              type="checkbox"
-              checked={selected.includes(String(val))}
-              onChange={() => toggleValue(String(val))}
-            />
-            <span>{String(val)}</span>
-          </label>
-        ))}
-      </div>
+      <input
+        type="text"
+        value={filter.listText ?? ""}
+        placeholder="comma,separated,values"
+        onChange={(e) => onChange({ listText: e.target.value })}
+      />
     );
   }
 
-  // Fallback: text input for comma-separated values
   return (
-    <input
-      type="text"
-      value={filter.listText ?? ""}
-      placeholder="comma,separated,values"
-      onChange={(e) => onChange({ listText: e.target.value })}
-    />
+    <div className="inlist-picker" ref={ref}>
+      <button
+        type="button"
+        className="inlist-trigger"
+        onClick={() => setOpen((v) => !v)}
+      >
+        {loading ? (
+          <span className="inlist-loading">Loading…</span>
+        ) : selected.length === 0 ? (
+          <span className="inlist-placeholder">Select values…</span>
+        ) : (
+          <span className="inlist-count">{selected.length} selected</span>
+        )}
+        <span className="inlist-arrow">{open ? "▲" : "▼"}</span>
+      </button>
+
+      {selected.length > 0 && (
+        <div className="inlist-pills">
+          {selected.map((v) => (
+            <span key={v} className="inlist-pill">
+              {v}
+              <button type="button" onClick={() => toggle(v)}>×</button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {open && values && values.length > 0 && (
+        <div className="inlist-dropdown">
+          <div className="inlist-search">
+            <input
+              type="search"
+              placeholder="Search…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              autoFocus
+            />
+            <div className="inlist-actions">
+              <button type="button" className="link-btn tiny"
+                onClick={() => onChange({ values: values.map(String), listText: values.join(",") })}>
+                All
+              </button>
+              <button type="button" className="link-btn tiny"
+                onClick={() => onChange({ values: [], listText: "" })}>
+                None
+              </button>
+            </div>
+          </div>
+          <ul className="inlist-options">
+            {filtered.map((val) => (
+              <li key={val}>
+                <label className="inlist-option">
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(String(val))}
+                    onChange={() => toggle(String(val))}
+                  />
+                  <span>{String(val)}</span>
+                </label>
+              </li>
+            ))}
+            {filtered.length === 0 && (
+              <li className="inlist-empty">No matches</li>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -131,7 +202,6 @@ export default function ConditionsPanel({
                   title={filter.enabled ? "Active" : "Inactive"}
                   onChange={(e) => onChange(idx, { enabled: e.target.checked })}
                 />
-
                 <select
                   value={filter.column}
                   onChange={(e) => onChange(idx, { column: e.target.value, values: [], listText: "" })}
@@ -142,7 +212,6 @@ export default function ConditionsPanel({
                     </option>
                   ))}
                 </select>
-
                 <select
                   value={filter.operator}
                   onChange={(e) => onChange(idx, { operator: e.target.value, values: [], listText: "" })}
@@ -162,7 +231,6 @@ export default function ConditionsPanel({
                     onChange={(e) => onChange(idx, { value: e.target.value })}
                   />
                 )}
-
                 {meta.valueMode === "range" && (
                   <div className="range-inputs">
                     <input
@@ -170,9 +238,7 @@ export default function ConditionsPanel({
                       value={filter.values?.[0] ?? ""}
                       placeholder="from"
                       onChange={(e) =>
-                        onChange(idx, {
-                          values: [e.target.value, filter.values?.[1] ?? ""],
-                        })
+                        onChange(idx, { values: [e.target.value, filter.values?.[1] ?? ""] })
                       }
                     />
                     <span className="range-sep">and</span>
@@ -181,23 +247,19 @@ export default function ConditionsPanel({
                       value={filter.values?.[1] ?? ""}
                       placeholder="to"
                       onChange={(e) =>
-                        onChange(idx, {
-                          values: [filter.values?.[0] ?? "", e.target.value],
-                        })
+                        onChange(idx, { values: [filter.values?.[0] ?? "", e.target.value] })
                       }
                     />
                   </div>
                 )}
-
                 {meta.valueMode === "list" && (
-                  <InListInput
+                  <InListPicker
                     model={model}
                     column={filter.column}
                     filter={filter}
                     onChange={(patch) => onChange(idx, patch)}
                   />
                 )}
-
                 {meta.valueMode === "none" && (
                   <span className="no-value">— no value —</span>
                 )}

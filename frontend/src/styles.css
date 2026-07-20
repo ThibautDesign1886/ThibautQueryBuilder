@@ -429,6 +429,20 @@ body {
 .grid-empty { color: var(--muted); text-align: center; padding: 24px; font-size: 13px; }
 .col-sorting { width: 130px; }
 .col-actions { width: 40px; text-align: right; }
+.col-controls { display: flex; align-items: center; gap: 4px; }
+.col-drag-handle {
+  font-size: 16px;
+  color: var(--line-strong);
+  cursor: grab;
+  padding: 0 2px;
+  opacity: 0;
+  transition: opacity 0.12s;
+  user-select: none;
+}
+.col-row:hover .col-drag-handle { opacity: 1; }
+.col-drag-handle:active { cursor: grabbing; }
+.col-row { transition: background 0.1s; }
+.col-row-drop { background: var(--brand-light) !important; outline: 2px dashed var(--brand); outline-offset: -2px; }
 .col-move { display: flex; flex-direction: column; gap: 2px; }
 .col-move .icon-btn { width: 22px; height: 22px; font-size: 9px; }
 .title-input {
@@ -593,27 +607,101 @@ body {
 .range-inputs { display: flex; align-items: center; gap: 6px; flex: 1; }
 .range-sep { color: var(--muted); }
 .no-value { color: var(--muted); font-style: italic; }
-.in-list-dropdown {
+/* --- In List Picker ------------------------------------------------------- */
+.inlist-picker { position: relative; flex: 1; min-width: 0; }
+
+.inlist-trigger {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px 12px;
-  flex: 1;
-  max-height: 140px;
-  overflow-y: auto;
-  padding: 6px 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
 }
-.in-list-option {
+.inlist-trigger:hover { border-color: var(--brand); }
+.inlist-placeholder { color: var(--muted); }
+.inlist-count { color: var(--brand-dark); font-weight: 600; }
+.inlist-loading { color: var(--muted); font-style: italic; }
+.inlist-arrow { font-size: 9px; color: var(--muted); flex-shrink: 0; }
+
+.inlist-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+.inlist-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--brand-light);
+  color: var(--brand-dark);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.inlist-pill button {
+  background: none;
+  border: none;
+  color: var(--brand-dark);
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.inlist-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 220px;
+  max-width: 340px;
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(30, 40, 70, 0.12);
+  z-index: 100;
+}
+.inlist-search {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
 }
-.in-list-option input { accent-color: var(--brand); }
+.inlist-search input {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  font-size: 12px;
+}
+.inlist-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.inlist-options {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.inlist-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.inlist-option:hover { background: var(--brand-light); }
+.inlist-option input { accent-color: var(--brand); }
+.inlist-empty { padding: 10px 12px; color: var(--muted); font-size: 12px; }
 
 /* --- Buttons -------------------------------------------------------------- */
 .icon-btn {
