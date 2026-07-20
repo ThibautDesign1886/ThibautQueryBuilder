@@ -197,6 +197,7 @@ body {
 .row-two .sorting-col > .panel { height: 100%; }
 
 .panel-conditions { flex: 0 0 auto; }
+.panel-conditions .panel-body { max-height: 256px; overflow-y: auto; }
 .panel-results { flex: 1 1 auto; min-height: 0; }
 
 /* --- Panels --------------------------------------------------------------- */
@@ -658,16 +659,11 @@ body {
 }
 
 .inlist-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  min-width: 220px;
-  max-width: 340px;
+  /* position/size/z-index set inline by the portal */
   background: #fff;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
-  box-shadow: 0 4px 16px rgba(30, 40, 70, 0.12);
-  z-index: 100;
+  box-shadow: 0 6px 24px rgba(30, 40, 70, 0.15);
 }
 .inlist-search {
   display: flex;
@@ -693,14 +689,25 @@ body {
 }
 .inlist-option {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
-  padding: 6px 12px;
+  padding: 7px 12px;
   cursor: pointer;
   font-size: 13px;
+  line-height: 1.4;
 }
 .inlist-option:hover { background: var(--brand-light); }
-.inlist-option input { accent-color: var(--brand); }
+.inlist-option input {
+  accent-color: var(--brand);
+  flex-shrink: 0;
+  margin-top: 2px; /* optical alignment with first line of text */
+}
+.inlist-option span {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+  text-align: left;
+}
 .inlist-empty { padding: 10px 12px; color: var(--muted); font-size: 12px; }
 
 /* --- Buttons -------------------------------------------------------------- */

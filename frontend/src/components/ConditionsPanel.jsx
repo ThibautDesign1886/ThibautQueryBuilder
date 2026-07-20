@@ -1,4 +1,5 @@
 // "Conditions" panel
+import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 import { inputType, operatorMeta, operatorsForType } from "../operators";
 import * as api from "../api";
@@ -32,17 +33,37 @@ function useDistinctValues(model, column, enabled) {
 
 function InListPicker({ model, column, filter, onChange }) {
   const [open, setOpen] = useState(false);
+  const [dropPos, setDropPos] = useState({ top: 0, left: 0, width: 0 });
   const [search, setSearch] = useState("");
-  const ref = useRef(null);
+  const triggerRef = useRef(null);
+  const dropRef = useRef(null);
   const { loading, values } = useDistinctValues(model, column, true);
 
   const selected = Array.isArray(filter.values) ? filter.values.map(String) : [];
+
+  // Compute dropdown position from trigger's bounding rect (fixed, viewport-relative)
+  const openDropdown = () => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setDropPos({
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: Math.max(rect.width, 260),
+      });
+    }
+    setOpen(true);
+  };
 
   // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (
+        triggerRef.current && !triggerRef.current.contains(e.target) &&
+        dropRef.current && !dropRef.current.contains(e.target)
+      ) {
+        setOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -59,7 +80,7 @@ function InListPicker({ model, column, filter, onChange }) {
     ? values.filter((v) => String(v).toLowerCase().includes(search.toLowerCase()))
     : [];
 
-  // If too many distinct values (empty array returned), fall back to text
+  // Too many distinct values — fall back to free text
   if (values !== null && values.length === 0 && !loading) {
     return (
       <input
@@ -71,12 +92,70 @@ function InListPicker({ model, column, filter, onChange }) {
     );
   }
 
+  // Portal dropdown — renders at document.body to escape any overflow:hidden ancestors
+  const dropdown = open && values && values.length > 0 && createPortal(
+    <div
+      ref={dropRef}
+      className="inlist-dropdown"
+      style={{
+        position: "fixed",
+        top: dropPos.top,
+        left: dropPos.left,
+        width: dropPos.width,
+        zIndex: 9999,
+      }}
+    >
+      <div className="inlist-search">
+        <input
+          type="search"
+          placeholder="Search…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          autoFocus
+        />
+        <div className="inlist-actions">
+          <button
+            type="button"
+            className="link-btn tiny"
+            onClick={() => onChange({ values: values.map(String), listText: values.join(",") })}
+          >
+            All
+          </button>
+          <button
+            type="button"
+            className="link-btn tiny"
+            onClick={() => onChange({ values: [], listText: "" })}
+          >
+            None
+          </button>
+        </div>
+      </div>
+      <ul className="inlist-options">
+        {filtered.map((val) => (
+          <li key={val}>
+            <label className="inlist-option">
+              <input
+                type="checkbox"
+                checked={selected.includes(String(val))}
+                onChange={() => toggle(String(val))}
+              />
+              <span>{String(val)}</span>
+            </label>
+          </li>
+        ))}
+        {filtered.length === 0 && <li className="inlist-empty">No matches</li>}
+      </ul>
+    </div>,
+    document.body
+  );
+
   return (
-    <div className="inlist-picker" ref={ref}>
+    <div className="inlist-picker">
       <button
+        ref={triggerRef}
         type="button"
         className="inlist-trigger"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => (open ? setOpen(false) : openDropdown())}
       >
         {loading ? (
           <span className="inlist-loading">Loading…</span>
@@ -99,46 +178,7 @@ function InListPicker({ model, column, filter, onChange }) {
         </div>
       )}
 
-      {open && values && values.length > 0 && (
-        <div className="inlist-dropdown">
-          <div className="inlist-search">
-            <input
-              type="search"
-              placeholder="Search…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              autoFocus
-            />
-            <div className="inlist-actions">
-              <button type="button" className="link-btn tiny"
-                onClick={() => onChange({ values: values.map(String), listText: values.join(",") })}>
-                All
-              </button>
-              <button type="button" className="link-btn tiny"
-                onClick={() => onChange({ values: [], listText: "" })}>
-                None
-              </button>
-            </div>
-          </div>
-          <ul className="inlist-options">
-            {filtered.map((val) => (
-              <li key={val}>
-                <label className="inlist-option">
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(String(val))}
-                    onChange={() => toggle(String(val))}
-                  />
-                  <span>{String(val)}</span>
-                </label>
-              </li>
-            ))}
-            {filtered.length === 0 && (
-              <li className="inlist-empty">No matches</li>
-            )}
-          </ul>
-        </div>
-      )}
+      {dropdown}
     </div>
   );
 }
@@ -204,7 +244,9 @@ export default function ConditionsPanel({
                 />
                 <select
                   value={filter.column}
-                  onChange={(e) => onChange(idx, { column: e.target.value, values: [], listText: "" })}
+                  onChange={(e) =>
+                    onChange(idx, { column: e.target.value, values: [], listText: "" })
+                  }
                 >
                   {fields.map((f) => (
                     <option key={f.column_name} value={f.column_name}>
@@ -214,7 +256,9 @@ export default function ConditionsPanel({
                 </select>
                 <select
                   value={filter.operator}
-                  onChange={(e) => onChange(idx, { operator: e.target.value, values: [], listText: "" })}
+                  onChange={(e) =>
+                    onChange(idx, { operator: e.target.value, values: [], listText: "" })
+                  }
                 >
                   {ops.map((op) => (
                     <option key={op.id} value={op.id}>
@@ -238,7 +282,9 @@ export default function ConditionsPanel({
                       value={filter.values?.[0] ?? ""}
                       placeholder="from"
                       onChange={(e) =>
-                        onChange(idx, { values: [e.target.value, filter.values?.[1] ?? ""] })
+                        onChange(idx, {
+                          values: [e.target.value, filter.values?.[1] ?? ""],
+                        })
                       }
                     />
                     <span className="range-sep">and</span>
@@ -247,7 +293,9 @@ export default function ConditionsPanel({
                       value={filter.values?.[1] ?? ""}
                       placeholder="to"
                       onChange={(e) =>
-                        onChange(idx, { values: [filter.values?.[0] ?? "", e.target.value] })
+                        onChange(idx, {
+                          values: [filter.values?.[0] ?? "", e.target.value],
+                        })
                       }
                     />
                   </div>
