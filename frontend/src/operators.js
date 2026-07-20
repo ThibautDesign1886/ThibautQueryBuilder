@@ -10,7 +10,9 @@ export const OPERATORS = [
   { id: "contains", label: "contains", valueMode: "single" },
   { id: "starts_with", label: "starts with", valueMode: "single" },
   { id: "gt", label: "greater than", valueMode: "single" },
+  { id: "gte", label: "greater than or equal", valueMode: "single" },
   { id: "lt", label: "less than", valueMode: "single" },
+  { id: "lte", label: "less than or equal", valueMode: "single" },
   { id: "between", label: "between", valueMode: "range" },
   { id: "in_list", label: "in list", valueMode: "list" },
   { id: "is_blank", label: "is blank", valueMode: "none" },
@@ -21,8 +23,8 @@ export const OPERATORS = [
 // operators valid for the chosen field's data type.
 const BY_TYPE = {
   string: ["equals", "not_equals", "contains", "starts_with", "in_list", "is_blank", "is_not_blank"],
-  number: ["equals", "not_equals", "gt", "lt", "between", "in_list", "is_blank", "is_not_blank"],
-  date: ["equals", "not_equals", "gt", "lt", "between", "in_list", "is_blank", "is_not_blank"],
+  number: ["equals", "not_equals", "gt", "gte", "lt", "lte", "between", "in_list", "is_blank", "is_not_blank"],
+  date: ["equals", "not_equals", "gt", "gte", "lt", "lte", "between", "in_list", "is_blank", "is_not_blank"],
   boolean: ["equals", "not_equals", "is_blank", "is_not_blank"],
 };
 

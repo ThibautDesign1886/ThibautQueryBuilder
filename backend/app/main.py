@@ -204,6 +204,32 @@ def get_fields(model: str = Query(default="sales")) -> list[FieldOut]:
     ]
 
 
+@api.get("/distinct")
+def get_distinct(model: str = Query(default="sales"), column: str = Query(...)) -> list:
+    """Return distinct values for a column (max 40). Empty list means too many values."""
+    try:
+        metadata = get_metadata(model)
+    except KeyError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if not metadata.is_allowed_column(column):
+        raise HTTPException(status_code=400, detail=f"Column not allowed: {column!r}")
+    quoted_col = metadata.quoted_column(column)
+    quoted_table = metadata.quoted_table()
+    sql = (
+        f"SELECT DISTINCT TOP 41 {quoted_col} "
+        f"FROM {quoted_table} "
+        f"WHERE {quoted_col} IS NOT NULL "
+        f"ORDER BY {quoted_col}"
+    )
+    try:
+        _, rows = run_select(sql, [])
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Database error: {exc}") from exc
+    if len(rows) > 40:
+        return []   # too many distinct values — tell frontend to use text input
+    return [row[0] for row in rows]
+
+
 def _run_query(request: QueryRequest, row_limit: int):
     """Shared validation + execution for /preview and /export."""
     try:

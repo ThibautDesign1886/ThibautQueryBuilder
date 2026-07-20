@@ -1,8 +1,79 @@
 // "Conditions" panel: the filters, phrased as "Select records where all/any of
 // the following apply". Each condition can be enabled/disabled with a checkbox.
+import { useEffect, useState } from "react";
 import { inputType, operatorMeta, operatorsForType } from "../operators";
+import * as api from "../api";
+
+// Cache distinct values per model+column so we don't re-fetch on every render.
+const _distinctCache = {};
+
+function useDistinctValues(model, column, enabled) {
+  const key = `${model}::${column}`;
+  const [values, setValues] = useState(_distinctCache[key] ?? null);
+
+  useEffect(() => {
+    if (!enabled || !column) return;
+    if (_distinctCache[key] !== undefined) {
+      setValues(_distinctCache[key]);
+      return;
+    }
+    api.getDistinct(model, column).then((data) => {
+      _distinctCache[key] = data; // [] means too many (>40)
+      setValues(data);
+    }).catch(() => {
+      _distinctCache[key] = [];
+      setValues([]);
+    });
+  }, [key, enabled]);
+
+  return values; // null = loading, [] = too many / use text, [...] = show dropdown
+}
+
+function InListInput({ model, column, filter, onChange }) {
+  const isInList = filter.operator === "in_list";
+  const distinctValues = useDistinctValues(model, column, isInList);
+
+  if (!isInList) return null;
+
+  const selected = Array.isArray(filter.values) ? filter.values.map(String) : [];
+
+  // Show multi-select checkboxes when we have ≤40 distinct values
+  if (distinctValues && distinctValues.length > 0) {
+    const toggleValue = (val) => {
+      const next = selected.includes(val)
+        ? selected.filter((v) => v !== val)
+        : [...selected, val];
+      onChange({ values: next, listText: next.join(",") });
+    };
+    return (
+      <div className="in-list-dropdown">
+        {distinctValues.map((val) => (
+          <label key={val} className="in-list-option">
+            <input
+              type="checkbox"
+              checked={selected.includes(String(val))}
+              onChange={() => toggleValue(String(val))}
+            />
+            <span>{String(val)}</span>
+          </label>
+        ))}
+      </div>
+    );
+  }
+
+  // Fallback: text input for comma-separated values
+  return (
+    <input
+      type="text"
+      value={filter.listText ?? ""}
+      placeholder="comma,separated,values"
+      onChange={(e) => onChange({ listText: e.target.value })}
+    />
+  );
+}
 
 export default function ConditionsPanel({
+  model,
   fields,
   filters,
   logic,
@@ -63,7 +134,7 @@ export default function ConditionsPanel({
 
                 <select
                   value={filter.column}
-                  onChange={(e) => onChange(idx, { column: e.target.value })}
+                  onChange={(e) => onChange(idx, { column: e.target.value, values: [], listText: "" })}
                 >
                   {fields.map((f) => (
                     <option key={f.column_name} value={f.column_name}>
@@ -74,7 +145,7 @@ export default function ConditionsPanel({
 
                 <select
                   value={filter.operator}
-                  onChange={(e) => onChange(idx, { operator: e.target.value })}
+                  onChange={(e) => onChange(idx, { operator: e.target.value, values: [], listText: "" })}
                 >
                   {ops.map((op) => (
                     <option key={op.id} value={op.id}>
@@ -119,11 +190,11 @@ export default function ConditionsPanel({
                 )}
 
                 {meta.valueMode === "list" && (
-                  <input
-                    type="text"
-                    value={filter.listText ?? ""}
-                    placeholder="comma,separated,values"
-                    onChange={(e) => onChange(idx, { listText: e.target.value })}
+                  <InListInput
+                    model={model}
+                    column={filter.column}
+                    filter={filter}
+                    onChange={(patch) => onChange(idx, patch)}
                   />
                 )}
 

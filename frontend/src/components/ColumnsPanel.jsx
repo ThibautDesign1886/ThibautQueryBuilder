@@ -1,5 +1,5 @@
-// "Columns" panel: the selected report columns with an editable Title and a
-// per-column Sorting control. Mirrors the Expression / Title / Sorting grid.
+// "Columns" panel: the selected report columns with an editable Title,
+// per-column Sorting, and up/down reordering.
 export default function ColumnsPanel({
   columns,
   titles,
@@ -7,6 +7,7 @@ export default function ColumnsPanel({
   onTitleChange,
   onSetSort,
   onRemove,
+  onMove,
 }) {
   return (
     <section className="panel">
@@ -20,6 +21,7 @@ export default function ColumnsPanel({
         <table className="grid-table">
           <thead>
             <tr>
+              <th style={{ width: 52 }} />
               <th>Expression</th>
               <th>Title</th>
               <th className="col-sorting">Sorting</th>
@@ -29,13 +31,35 @@ export default function ColumnsPanel({
           <tbody>
             {columns.length === 0 && (
               <tr>
-                <td colSpan={4} className="grid-empty">
+                <td colSpan={5} className="grid-empty">
                   No columns selected yet.
                 </td>
               </tr>
             )}
-            {columns.map((f) => (
+            {columns.map((f, idx) => (
               <tr key={f.column_name}>
+                <td style={{ padding: "4px 6px" }}>
+                  <div className="col-move">
+                    <button
+                      type="button"
+                      className="icon-btn"
+                      title="Move up"
+                      disabled={idx === 0}
+                      onClick={() => onMove(idx, idx - 1)}
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      className="icon-btn"
+                      title="Move down"
+                      disabled={idx === columns.length - 1}
+                      onClick={() => onMove(idx, idx + 1)}
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </td>
                 <td>
                   <span className="cell-icon">▦</span>
                   {f.display_name}
@@ -45,17 +69,13 @@ export default function ColumnsPanel({
                     className="title-input"
                     type="text"
                     value={titles[f.column_name] ?? f.display_name}
-                    onChange={(e) =>
-                      onTitleChange(f.column_name, e.target.value)
-                    }
+                    onChange={(e) => onTitleChange(f.column_name, e.target.value)}
                   />
                 </td>
                 <td className="col-sorting">
                   <select
                     value={sortByCol[f.column_name] || ""}
-                    onChange={(e) =>
-                      onSetSort(f.column_name, e.target.value || null)
-                    }
+                    onChange={(e) => onSetSort(f.column_name, e.target.value || null)}
                   >
                     <option value="">Not sorted</option>
                     <option value="ASC">Ascending</option>

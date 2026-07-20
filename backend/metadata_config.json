@@ -4,20 +4,6 @@
     "table_name": "dbo.SalesQueryBuilder_MasterTable",
     "fields": [
       {
-        "display_name": "Master Table Key",
-        "column_name": "MasterTable_Key",
-        "data_type": "number",
-        "group": "Identifiers",
-        "aggregate": "count"
-      },
-      {
-        "display_name": "Transaction Id",
-        "column_name": "TransactionId",
-        "data_type": "string",
-        "group": "Identifiers",
-        "aggregate": "none"
-      },
-      {
         "display_name": "Site Id",
         "column_name": "SiteId",
         "data_type": "string",
@@ -67,6 +53,13 @@
         "aggregate": "none"
       },
       {
+        "display_name": "Order Date",
+        "column_name": "OrderDate",
+        "data_type": "date",
+        "group": "Sales Order",
+        "aggregate": "none"
+      },
+      {
         "display_name": "Customer Number",
         "column_name": "CustomerNumber",
         "data_type": "string",
@@ -75,7 +68,7 @@
       },
       {
         "display_name": "Customersequence",
-        "column_name": "customersequence",
+        "column_name": "CustomerSequence",
         "data_type": "number",
         "group": "Customer",
         "aggregate": "count"
@@ -103,35 +96,35 @@
       },
       {
         "display_name": "Shiptoaddress1",
-        "column_name": "shiptoaddress1",
+        "column_name": "ShiptoAddress1",
         "data_type": "string",
         "group": "Ship To",
         "aggregate": "none"
       },
       {
         "display_name": "Shiptoaddress2",
-        "column_name": "shiptoaddress2",
+        "column_name": "ShiptoAddress2",
         "data_type": "string",
         "group": "Ship To",
         "aggregate": "none"
       },
       {
         "display_name": "Shiptostate",
-        "column_name": "shiptostate",
+        "column_name": "ShiptoState",
         "data_type": "string",
         "group": "Ship To",
         "aggregate": "none"
       },
       {
         "display_name": "Shiptozipcode",
-        "column_name": "shiptozipcode",
+        "column_name": "ShiptoZipCode",
         "data_type": "string",
         "group": "Ship To",
         "aggregate": "none"
       },
       {
         "display_name": "Shiptocounty",
-        "column_name": "shiptocounty",
+        "column_name": "ShiptoCounty",
         "data_type": "string",
         "group": "Ship To",
         "aggregate": "none"
@@ -294,7 +287,7 @@
         "display_name": "Terms Code",
         "column_name": "TermsCode",
         "data_type": "string",
-        "group": "Item & Product",
+        "group": "Bill To",
         "aggregate": "none"
       },
       {
@@ -546,7 +539,7 @@
         "display_name": "Product Material Margin",
         "column_name": "ProductMaterialMargin",
         "data_type": "number",
-        "group": "Item & Product",
+        "group": "Financials",
         "aggregate": "sum"
       },
       {

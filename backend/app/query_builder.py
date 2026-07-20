@@ -33,7 +33,7 @@ from .metadata import Metadata
 from .models import Filter, QueryRequest
 
 # Operators that take exactly one value.
-_SINGLE_VALUE_OPS = {"equals", "not_equals", "contains", "starts_with", "gt", "lt"}
+_SINGLE_VALUE_OPS = {"equals", "not_equals", "contains", "starts_with", "gt", "gte", "lt", "lte"}
 # Operators that take two values (an inclusive range).
 _RANGE_OPS = {"between"}
 # Operators that take a list of values.
@@ -48,9 +48,9 @@ ALL_OPERATORS = _SINGLE_VALUE_OPS | _RANGE_OPS | _LIST_OPS | _NO_VALUE_OPS
 _OPERATORS_BY_TYPE = {
     "string": {"equals", "not_equals", "contains", "starts_with", "in_list",
                "is_blank", "is_not_blank"},
-    "number": {"equals", "not_equals", "gt", "lt", "between", "in_list",
+    "number": {"equals", "not_equals", "gt", "gte", "lt", "lte", "between", "in_list",
                "is_blank", "is_not_blank"},
-    "date": {"equals", "not_equals", "gt", "lt", "between", "in_list",
+    "date": {"equals", "not_equals", "gt", "gte", "lt", "lte", "between", "in_list",
              "is_blank", "is_not_blank"},
     "boolean": {"equals", "not_equals", "is_blank", "is_not_blank"},
 }
@@ -163,8 +163,12 @@ def _build_filter_clause(
         return f"{col} <> ?", [value]
     if op == "gt":
         return f"{col} > ?", [value]
+    if op == "gte":
+        return f"{col} >= ?", [value]
     if op == "lt":
         return f"{col} < ?", [value]
+    if op == "lte":
+        return f"{col} <= ?", [value]
     if op == "contains":
         # LIKE with the wildcard supplied as part of the *parameter*, not the
         # SQL. We escape LIKE metacharacters so user input is treated literally.

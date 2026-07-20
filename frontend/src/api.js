@@ -81,6 +81,10 @@ export async function getFields(model = "sales") {
   return handle(await fetch(`${BASE}/fields?model=${encodeURIComponent(model)}`, { headers: headers() }));
 }
 
+export async function getDistinct(model, column) {
+  return handle(await fetch(`${BASE}/distinct?model=${encodeURIComponent(model)}&column=${encodeURIComponent(column)}`, { headers: headers() }));
+}
+
 export async function preview(payload) {
   return handle(
     await fetch(`${BASE}/preview`, {

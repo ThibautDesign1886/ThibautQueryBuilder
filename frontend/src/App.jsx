@@ -196,6 +196,15 @@ export default function App() {
     setTitles({});
   }
 
+  function moveColumn(fromIndex, toIndex) {
+    setSelected((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
+  }
+
   function setTitle(col, value) {
     setTitles((t) => ({ ...t, [col]: value }));
   }
@@ -513,6 +522,7 @@ export default function App() {
                     onTitleChange={setTitle}
                     onSetSort={setSort}
                     onRemove={toggleColumn}
+                    onMove={moveColumn}
                   />
                 </div>
                 <div className="sorting-col">
@@ -521,6 +531,7 @@ export default function App() {
               </div>
 
               <ConditionsPanel
+                model={selectedModel}
                 fields={fields}
                 filters={filters}
                 logic={logic}
