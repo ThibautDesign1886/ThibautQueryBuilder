@@ -28,6 +28,8 @@ is blank, the gate is disabled (handy for local development).
 The user never sends SQL. Requests are validated against the metadata whitelist
 and executed as parameterized queries (see query_builder.py).
 """
+import csv
+import io
 from datetime import datetime
 from pathlib import Path
 
@@ -356,6 +358,22 @@ def export(request: QueryRequest) -> StreamingResponse:
         media_type=(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ),
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@api.post("/export/csv")
+def export_csv(request: QueryRequest) -> StreamingResponse:
+    """Return a downloadable .csv for the report (capped at EXPORT_ROW_LIMIT)."""
+    columns, display_names, rows = _run_query(request, settings.export_row_limit)
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(display_names)
+    writer.writerows(rows)
+    filename = f"report_{datetime.utcnow():%Y%m%d_%H%M%S}.csv"
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
 

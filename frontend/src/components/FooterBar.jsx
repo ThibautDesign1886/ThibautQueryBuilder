@@ -8,8 +8,10 @@ export default function FooterBar({
   onLoad,
   onReset,
   onExport,
+  onExportCsv,
   saving,
   exporting,
+  exportingCsv,
 }) {
   return (
     <footer className="footer-bar">
@@ -50,9 +52,17 @@ export default function FooterBar({
           type="button"
           className="footer-btn"
           onClick={onExport}
-          disabled={exporting}
+          disabled={exporting || exportingCsv}
         >
           {exporting ? "EXPORTING…" : "EXPORT TO EXCEL"}
+        </button>
+        <button
+          type="button"
+          className="footer-btn"
+          onClick={onExportCsv}
+          disabled={exporting || exportingCsv}
+        >
+          {exportingCsv ? "EXPORTING…" : "EXPORT TO CSV"}
         </button>
       </div>
     </footer>

@@ -139,6 +139,38 @@ export async function exportExcel(payload) {
   window.URL.revokeObjectURL(url);
 }
 
+export async function exportCsv(payload) {
+  const res = await fetch(`${BASE}/export/csv`, {
+    method: "POST",
+    headers: headers({ "Content-Type": "application/json" }),
+    body: JSON.stringify(payload),
+  });
+  if (res.status === 401) {
+    onUnauthorized();
+    throw new Error("Your session needs the password again.");
+  }
+  if (!res.ok) {
+    let detail = `Export failed (${res.status})`;
+    try {
+      const body = await res.json();
+      if (body.detail) detail = body.detail;
+    } catch (_) { /* ignore */ }
+    throw new Error(detail);
+  }
+  const blob = await res.blob();
+  const disposition = res.headers.get("Content-Disposition") || "";
+  const match = disposition.match(/filename="?([^"]+)"?/);
+  const filename = match ? match[1] : "report.csv";
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}
+
 export async function listTemplates() {
   return handle(await fetch(`${BASE}/templates`, { headers: headers() }));
 }

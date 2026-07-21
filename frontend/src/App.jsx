@@ -39,6 +39,7 @@ export default function App() {
   const [loadingFields, setLoadingFields] = useState(true);
   const [executing, setExecuting] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [exportingCsv, setExportingCsv] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -345,6 +346,23 @@ export default function App() {
     }
   }
 
+  async function handleExportCsv() {
+    setError("");
+    setNotice("");
+    if (selected.length === 0) {
+      setError("Select at least one column.");
+      return;
+    }
+    setExportingCsv(true);
+    try {
+      await api.exportCsv(buildPayload());
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setExportingCsv(false);
+    }
+  }
+
   async function handleSave() {
     setError("");
     setNotice("");
@@ -559,8 +577,10 @@ export default function App() {
         onLoad={handleLoad}
         onReset={handleReset}
         onExport={handleExport}
+        onExportCsv={handleExportCsv}
         saving={saving}
         exporting={exporting}
+        exportingCsv={exportingCsv}
       />
     </div>
   );
