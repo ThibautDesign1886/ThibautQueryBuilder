@@ -32,6 +32,34 @@
         "aggregate": "none"
       },
       {
+        "display_name": "Invoice Fiscal Year",
+        "column_name": "InvoiceFiscalYear",
+        "data_type": "string",
+        "group": "Invoice",
+        "aggregate": "none"
+      },
+      {
+        "display_name": "Invoice Fiscal Period Number",
+        "column_name": "InvoiceFiscalPeriodNumber",
+        "data_type": "number",
+        "group": "Invoice",
+        "aggregate": "none"
+      },
+      {
+        "display_name": "Invoice Fiscal Period",
+        "column_name": "InvoiceFiscalPeriod",
+        "data_type": "string",
+        "group": "Invoice",
+        "aggregate": "none"
+      },
+      {
+        "display_name": "Invoice Fiscal Quarter",
+        "column_name": "InvoiceFiscalQuarter",
+        "data_type": "string",
+        "group": "Invoice",
+        "aggregate": "none"
+      },
+      {
         "display_name": "Sales Order Number",
         "column_name": "SalesOrderNumber",
         "data_type": "string",
@@ -298,6 +326,27 @@
         "aggregate": "none"
       },
       {
+        "display_name": "Bill To Create Date",
+        "column_name": "BillToCreateDate",
+        "data_type": "date",
+        "group": "Bill To",
+        "aggregate": "none"
+      },
+      {
+        "display_name": "Bill To Create Year",
+        "column_name": "BillToCreateYear",
+        "data_type": "string",
+        "group": "Bill To",
+        "aggregate": "none"
+      },
+      {
+        "display_name": "Bill To Create Month Number",
+        "column_name": "BilltoCreateMonthNumber",
+        "data_type": "string",
+        "group": "Bill To",
+        "aggregate": "none"
+      },
+      {
         "display_name": "Item Number",
         "column_name": "ItemNumber",
         "data_type": "string",
@@ -445,14 +494,14 @@
         "aggregate": "none"
       },
       {
-        "display_name": "Historical Salesperson Number",
+        "display_name": "Salesperson Number",
         "column_name": "HistoricalSalespersonNumber",
         "data_type": "string",
         "group": "Salesperson & Manager",
         "aggregate": "none"
       },
       {
-        "display_name": "Historical Salesperson Name",
+        "display_name": "Salesperson Name",
         "column_name": "HistoricalSalespersonName",
         "data_type": "string",
         "group": "Salesperson & Manager",
