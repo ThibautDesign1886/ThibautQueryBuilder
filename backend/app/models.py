@@ -97,6 +97,7 @@ class TemplateCreate(BaseModel):
 class TemplateSummary(BaseModel):
     id: int
     name: str
+    model: Optional[str] = None
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 

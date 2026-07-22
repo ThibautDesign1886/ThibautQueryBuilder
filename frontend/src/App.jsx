@@ -7,6 +7,7 @@ import ConditionsPanel from "./components/ConditionsPanel";
 import ResultsPanel from "./components/ResultsPanel";
 import FooterBar from "./components/FooterBar";
 import Login from "./components/Login";
+import ReportsPage from "./components/ReportsPage";
 import { operatorMeta, operatorsForType } from "./operators";
 
 let filterId = 0;
@@ -35,6 +36,8 @@ export default function App() {
   const [loginError, setLoginError] = useState("");
   const [loginBusy, setLoginBusy] = useState(false);
   const [currentUser, setCurrentUser] = useState(null); // { email, auth_mode }
+
+  const [currentPage, setCurrentPage] = useState("builder"); // "builder" | "reports"
 
   const [loadingFields, setLoadingFields] = useState(true);
   const [executing, setExecuting] = useState(false);
@@ -469,6 +472,12 @@ export default function App() {
     }
   }
 
+  // --- reports page ----------------------------------------------------------
+  async function handleOpenReport(id) {
+    await handleLoad(id);
+    setCurrentPage("builder");
+  }
+
   function handleReset() {
     setSelected([]);
     setTitles({});
@@ -504,84 +513,104 @@ export default function App() {
 
       <nav className="tabbar">
         <span className="tab">Detail</span>
-        <span className="tab active">Query Builder</span>
+        <button
+          className={`tab${currentPage === "builder" ? " active" : ""}`}
+          onClick={() => setCurrentPage("builder")}
+        >
+          Query Builder
+        </button>
+        <button
+          className={`tab${currentPage === "reports" ? " active" : ""}`}
+          onClick={() => setCurrentPage("reports")}
+        >
+          Reports
+        </button>
       </nav>
 
-      <main className="workspace">
-        {error && <div className="alert alert-error">{error}</div>}
-        {notice && <div className="alert alert-info">{notice}</div>}
+      {currentPage === "reports" ? (
+        <ReportsPage
+          dataSources={dataSources}
+          onOpen={handleOpenReport}
+        />
+      ) : (
+        <>
+          <main className="workspace">
+            {error && <div className="alert alert-error">{error}</div>}
+            {notice && <div className="alert alert-info">{notice}</div>}
 
-        {loadingFields ? (
-          <div className="panel">
-            <div className="panel-body">Loading fields…</div>
-          </div>
-        ) : (
-          <div className="layout">
-            <div className="layout-left">
-              <AttributePanel
-                dataSources={dataSources}
-                selectedModel={selectedModel}
-                onModelChange={handleModelChange}
-                fields={fields}
-                selected={selected}
-                onToggle={toggleColumn}
-                onSelectAllInGroup={selectAllInGroup}
-                onClearAll={clearAllColumns}
-              />
-            </div>
-
-            <div className="layout-right">
-              <div className="row-two">
-                <div className="grow">
-                  <ColumnsPanel
-                    columns={selectedFields}
-                    titles={titles}
-                    sortByCol={sortByCol}
-                    onTitleChange={setTitle}
-                    onSetSort={setSort}
-                    onRemove={toggleColumn}
-                    onMove={moveColumn}
+            {loadingFields ? (
+              <div className="panel">
+                <div className="panel-body">Loading fields…</div>
+              </div>
+            ) : (
+              <div className="layout">
+                <div className="layout-left">
+                  <AttributePanel
+                    dataSources={dataSources}
+                    selectedModel={selectedModel}
+                    onModelChange={handleModelChange}
+                    fields={fields}
+                    selected={selected}
+                    onToggle={toggleColumn}
+                    onSelectAllInGroup={selectAllInGroup}
+                    onClearAll={clearAllColumns}
                   />
                 </div>
-                <div className="sorting-col">
-                  <AnalysisPanel analysis={analysis} loading={executing} />
+
+                <div className="layout-right">
+                  <div className="row-two">
+                    <div className="grow">
+                      <ColumnsPanel
+                        columns={selectedFields}
+                        titles={titles}
+                        sortByCol={sortByCol}
+                        onTitleChange={setTitle}
+                        onSetSort={setSort}
+                        onRemove={toggleColumn}
+                        onMove={moveColumn}
+                      />
+                    </div>
+                    <div className="sorting-col">
+                      <AnalysisPanel analysis={analysis} loading={executing} />
+                    </div>
+                  </div>
+
+                  <ConditionsPanel
+                    model={selectedModel}
+                    fields={fields}
+                    filters={filters}
+                    logic={logic}
+                    onLogicChange={setLogic}
+                    onAdd={addFilter}
+                    onRemove={removeFilter}
+                    onChange={changeFilter}
+                  />
+
+                  <ResultsPanel
+                    result={result}
+                    executing={executing}
+                    onExecute={handleExecute}
+                  />
                 </div>
               </div>
+            )}
+          </main>
 
-              <ConditionsPanel
-                model={selectedModel}
-                fields={fields}
-                filters={filters}
-                logic={logic}
-                onLogicChange={setLogic}
-                onAdd={addFilter}
-                onRemove={removeFilter}
-                onChange={changeFilter}
-              />
-
-              <ResultsPanel
-                result={result}
-                executing={executing}
-                onExecute={handleExecute}
-              />
-            </div>
-          </div>
-        )}
-      </main>
-
-      <FooterBar
-        templates={templates}
-        templateName={templateName}
-        onNameChange={setTemplateName}
-        onSave={handleSave}
-        onLoad={handleLoad}
-        onReset={handleReset}
-        onExport={handleExport}
-        onExportCsv={handleExportCsv}
-        saving={saving}
-        exporting={exporting}
-        exportingCsv={exportingCsv}
-      />
+          <FooterBar
+            templates={templates}
+            templateName={templateName}
+            onNameChange={setTemplateName}
+            onSave={handleSave}
+            onLoad={handleLoad}
+            onReset={handleReset}
+            onExport={handleExport}
+            onExportCsv={handleExportCsv}
+            saving={saving}
+            exporting={exporting}
+            exportingCsv={exportingCsv}
+          />
+        </>
+      )}
     </div>
   );
 }

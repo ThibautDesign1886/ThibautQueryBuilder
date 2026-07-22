@@ -49,7 +49,8 @@ def _row_to_detail(row: list) -> TemplateDetail:
 
 def list_templates() -> List[TemplateSummary]:
     _, rows = run_select(
-        "SELECT id, name, created_at, updated_at "
+        "SELECT id, name, created_at, updated_at, "
+        "JSON_VALUE(config, '$.model') AS model "
         "FROM dbo.report_templates "
         "ORDER BY name",
         [],
@@ -60,6 +61,7 @@ def list_templates() -> List[TemplateSummary]:
             name=r[1],
             created_at=_iso(r[2]),
             updated_at=_iso(r[3]),
+            model=r[4],
         )
         for r in rows
     ]
