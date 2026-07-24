@@ -100,6 +100,9 @@ class TemplateSummary(BaseModel):
     model: Optional[str] = None
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
+    created_by: Optional[str] = None
+    last_run_by: Optional[str] = None
+    last_run_at: Optional[str] = None
 
 
 class TemplateDetail(TemplateSummary):

@@ -37,7 +37,8 @@ export default function App() {
   const [loginBusy, setLoginBusy] = useState(false);
   const [currentUser, setCurrentUser] = useState(null); // { email, auth_mode }
 
-  const [currentPage, setCurrentPage] = useState("builder"); // "builder" | "reports"
+  const [currentPage, setCurrentPage] = useState("reports"); // "builder" | "reports"
+  const [currentTemplateId, setCurrentTemplateId] = useState(null);
 
   const [loadingFields, setLoadingFields] = useState(true);
   const [executing, setExecuting] = useState(false);
@@ -323,6 +324,7 @@ export default function App() {
       ]);
       setResult(previewRes);
       setAnalysis(analysisRes);
+      if (currentTemplateId) api.recordTemplateRun(currentTemplateId);
     } catch (e) {
       setError(e.message);
       setResult(null);
@@ -442,6 +444,7 @@ export default function App() {
       setSorts(validSorts);
       setLogic(cfg.filter_logic || "AND");
       setTemplateName(t.name);
+      setCurrentTemplateId(t.id);
       setFilters(
         validFilters.map((f) => {
           const meta = operatorMeta(f.operator);
@@ -487,6 +490,7 @@ export default function App() {
     setResult(null);
     setAnalysis(null);
     setTemplateName("");
+    setCurrentTemplateId(null);
     setError("");
     setNotice("");
   }
@@ -531,6 +535,7 @@ export default function App() {
         <ReportsPage
           dataSources={dataSources}
           onOpen={handleOpenReport}
+          onAddNew={() => { handleReset(); setCurrentPage("builder"); }}
         />
       ) : (
         <>

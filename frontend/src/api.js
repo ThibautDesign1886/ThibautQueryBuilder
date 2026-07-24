@@ -188,3 +188,26 @@ export async function saveTemplate(payload) {
     })
   );
 }
+
+export async function recordTemplateRun(id) {
+  const res = await fetch(`${BASE}/templates/${id}/run`, {
+    method: "POST",
+    headers: headers(),
+  });
+  // fire-and-forget — don't throw on failure, just swallow silently
+  return res.ok;
+}
+
+export async function deleteTemplate(id) {
+  const res = await fetch(`${BASE}/templates/${id}`, {
+    method: "DELETE",
+    headers: headers(),
+  });
+  if (res.status === 401) { onUnauthorized(); throw new Error("Session expired."); }
+  if (res.status === 204) return;
+  if (!res.ok) {
+    let detail = `Delete failed (${res.status})`;
+    try { const body = await res.json(); if (body.detail) detail = body.detail; } catch (_) {}
+    throw new Error(detail);
+  }
+}

@@ -884,11 +884,32 @@ body {
   background: var(--workspace-bg);
 }
 
+.reports-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.reports-add-btn {
+  padding: 8px 18px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  margin-bottom: 2px;
+}
+.reports-add-btn:hover { background: var(--brand-dark); }
+
 .reports-tabs {
   display: flex;
   gap: 0;
   border-bottom: 2px solid var(--line);
-  margin-bottom: 20px;
+  flex: 1;
 }
 .reports-tab {
   background: none;
@@ -1057,6 +1078,12 @@ body {
   background: var(--brand-light);
 }
 .report-action-btn:disabled { opacity: 0.4; cursor: default; }
+
+.report-action-btn--danger:hover:not(:disabled) {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: #fdecea;
+}
 
 .report-action-spinner {
   display: inline-block;

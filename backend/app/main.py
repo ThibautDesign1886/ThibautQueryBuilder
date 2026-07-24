@@ -378,8 +378,13 @@ def export_csv(request: QueryRequest) -> StreamingResponse:
     )
 
 
+def _current_user(request: Request) -> Optional[str]:
+    """Extract the authenticated user's email from Azure EasyAuth headers."""
+    return request.headers.get("X-MS-CLIENT-PRINCIPAL-NAME") or None
+
+
 @api.post("/templates", response_model=TemplateDetail)
-def create_template(payload: TemplateCreate) -> TemplateDetail:
+def create_template(payload: TemplateCreate, request: Request) -> TemplateDetail:
     """Save (or update by name) a report template."""
     name = payload.name.strip()
     if not name:
@@ -408,7 +413,7 @@ def create_template(payload: TemplateCreate) -> TemplateDetail:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     try:
-        return templates_store.save_template(name, payload.config)
+        return templates_store.save_template(name, payload.config, created_by=_current_user(request))
     except Exception as exc:  # pragma: no cover
         raise HTTPException(
             status_code=502, detail=f"Could not save template: {exc}"
@@ -436,6 +441,29 @@ def load_template(template_id: int) -> TemplateDetail:
     if template is None:
         raise HTTPException(status_code=404, detail="Template not found.")
     return template
+
+
+@api.post("/templates/{template_id}/run", status_code=204)
+def record_template_run(template_id: int, request: Request) -> None:
+    """Record that the current user executed this template."""
+    try:
+        templates_store.record_run(template_id, _current_user(request))
+    except Exception as exc:  # pragma: no cover
+        raise HTTPException(
+            status_code=502, detail=f"Could not record run: {exc}"
+        ) from exc
+
+
+@api.delete("/templates/{template_id}", status_code=204)
+def delete_template(template_id: int) -> None:
+    try:
+        deleted = templates_store.delete_template(template_id)
+    except Exception as exc:  # pragma: no cover
+        raise HTTPException(
+            status_code=502, detail=f"Could not delete template: {exc}"
+        ) from exc
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Template not found.")
 
 
 app.include_router(api)

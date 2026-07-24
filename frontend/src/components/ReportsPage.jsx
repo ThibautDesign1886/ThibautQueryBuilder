@@ -42,6 +42,14 @@ function IconDuplicate() {
   );
 }
 
+function IconTrash() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" width="16" height="16">
+      <path d="M3 5h14M8 5V3h4v2M6 5l1 12h6l1-12" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function formatDate(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -68,7 +76,7 @@ function pushRecent(id) {
   sessionStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, MAX_RECENT)));
 }
 
-export default function ReportsPage({ dataSources, onOpen }) {
+export default function ReportsPage({ dataSources, onOpen, onAddNew }) {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -77,6 +85,7 @@ export default function ReportsPage({ dataSources, onOpen }) {
   const [exportingId, setExportingId] = useState(null);
   const [exportingCsvId, setExportingCsvId] = useState(null);
   const [duplicatingId, setDuplicatingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
   const [recentIds, setRecentIds] = useState(getRecent);
 
@@ -154,6 +163,20 @@ export default function ReportsPage({ dataSources, onOpen }) {
     }
   }
 
+  async function handleDelete(t) {
+    if (!window.confirm(`Delete "${t.name}"? This cannot be undone.`)) return;
+    setError("");
+    setDeletingId(t.id);
+    try {
+      await api.deleteTemplate(t.id);
+      setTemplates((prev) => prev.filter((x) => x.id !== t.id));
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   const modelLabel = (key) => {
     const ds = dataSources.find((d) => d.key === key);
     return ds ? ds.label : key;
@@ -163,19 +186,24 @@ export default function ReportsPage({ dataSources, onOpen }) {
     <main className="reports-page">
       {error && <div className="alert alert-error">{error}</div>}
 
-      <div className="reports-tabs">
-        <button
-          className={`reports-tab${activeTab === "public" ? " active" : ""}`}
-          onClick={() => setActiveTab("public")}
-        >
-          Public Reports
-          <span className="reports-tab-badge">{templates.length}</span>
-        </button>
-        <button
-          className={`reports-tab${activeTab === "recent" ? " active" : ""}`}
-          onClick={() => setActiveTab("recent")}
-        >
-          Recently Viewed
+      <div className="reports-header">
+        <div className="reports-tabs">
+          <button
+            className={`reports-tab${activeTab === "public" ? " active" : ""}`}
+            onClick={() => setActiveTab("public")}
+          >
+            Public Reports
+            <span className="reports-tab-badge">{templates.length}</span>
+          </button>
+          <button
+            className={`reports-tab${activeTab === "recent" ? " active" : ""}`}
+            onClick={() => setActiveTab("recent")}
+          >
+            Recently Viewed
+          </button>
+        </div>
+        <button className="reports-add-btn" onClick={onAddNew}>
+          + Add New
         </button>
       </div>
 
@@ -239,6 +267,15 @@ export default function ReportsPage({ dataSources, onOpen }) {
                   {t.updated_at && (
                     <span>Last change: <strong>{formatDate(t.updated_at)}</strong></span>
                   )}
+                  {t.created_by && (
+                    <span>Created by: <strong>{t.created_by}</strong></span>
+                  )}
+                  {t.last_run_by && (
+                    <span>
+                      Last run by: <strong>{t.last_run_by}</strong>
+                      {t.last_run_at && <> on <strong>{formatDate(t.last_run_at)}</strong></>}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -284,6 +321,18 @@ export default function ReportsPage({ dataSources, onOpen }) {
                     <span className="report-action-spinner" />
                   ) : (
                     <IconDuplicate />
+                  )}
+                </button>
+                <button
+                  className="report-action-btn report-action-btn--danger"
+                  title="Delete"
+                  onClick={() => handleDelete(t)}
+                  disabled={deletingId === t.id}
+                >
+                  {deletingId === t.id ? (
+                    <span className="report-action-spinner" />
+                  ) : (
+                    <IconTrash />
                   )}
                 </button>
               </div>
