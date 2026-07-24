@@ -33,6 +33,8 @@ import io
 from datetime import datetime
 from pathlib import Path
 
+from typing import Optional
+
 from fastapi import APIRouter, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
