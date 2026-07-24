@@ -516,18 +516,17 @@ export default function App() {
       </header>
 
       <nav className="tabbar">
-        <span className="tab">Detail</span>
-        <button
-          className={`tab${currentPage === "builder" ? " active" : ""}`}
-          onClick={() => setCurrentPage("builder")}
-        >
-          Query Builder
-        </button>
         <button
           className={`tab${currentPage === "reports" ? " active" : ""}`}
           onClick={() => setCurrentPage("reports")}
         >
           Reports
+        </button>
+        <button
+          className={`tab${currentPage === "builder" ? " active" : ""}`}
+          onClick={() => setCurrentPage("builder")}
+        >
+          Query Builder
         </button>
       </nav>
 
