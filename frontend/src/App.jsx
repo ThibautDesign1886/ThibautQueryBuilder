@@ -341,6 +341,13 @@ export default function App() {
       setError("Select at least one column.");
       return;
     }
+    const rowCount = analysis?.row_count ?? 0;
+    if (rowCount > 400_000) {
+      const ok = window.confirm(
+        `Excel export is capped at 400,000 rows — your query has ${rowCount.toLocaleString()} rows.\n\nUse Export to CSV for the full dataset. Continue with Excel (first 400k rows)?`
+      );
+      if (!ok) return;
+    }
     setExporting(true);
     try {
       await api.exportExcel(buildPayload());

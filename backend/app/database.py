@@ -6,7 +6,7 @@ connection string from `config.py`. No ORM is used — queries are built by
 `query_builder.py` and executed with bound parameters here.
 """
 import contextlib
-from typing import Any, Iterator, List, Sequence, Tuple
+from typing import Any, Generator, Iterator, List, Sequence, Tuple
 
 import pyodbc
 
@@ -37,6 +37,29 @@ def run_select(sql: str, params: Sequence[Any]) -> Tuple[List[str], List[List[An
         columns = [col[0] for col in cursor.description]
         rows = [list(row) for row in cursor.fetchall()]
         return columns, rows
+
+
+def stream_rows(
+    sql: str, params: Sequence[Any], batch_size: int = 2000
+) -> Generator[List[List[Any]], None, None]:
+    """
+    Execute a SELECT and yield rows in batches without loading the full result
+    set into memory.  Each yielded value is a list of rows (list of lists).
+    The caller must consume the generator promptly — the DB connection stays
+    open until the generator is exhausted or garbage-collected.
+    """
+    settings = get_settings()
+    conn = pyodbc.connect(settings.odbc_connection_string, timeout=10)
+    try:
+        cursor = conn.cursor()
+        cursor.execute(sql, list(params))
+        while True:
+            batch = cursor.fetchmany(batch_size)
+            if not batch:
+                break
+            yield [list(row) for row in batch]
+    finally:
+        conn.close()
 
 
 def execute(sql: str, params: Sequence[Any] = ()) -> None:

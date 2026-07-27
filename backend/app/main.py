@@ -42,6 +42,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from . import excel_export, templates_store
+from .database import stream_rows
 from .config import get_settings
 from .database import run_select
 from .metadata import get_all_models, get_metadata
@@ -234,8 +235,8 @@ def get_distinct(model: str = Query(default="sales"), column: str = Query(...)) 
     return [row[0] for row in rows]
 
 
-def _run_query(request: QueryRequest, row_limit: int):
-    """Shared validation + execution for /preview and /export."""
+def _build_validated(request: QueryRequest, row_limit: int):
+    """Validate, build, and return (built_query, display_names). Does NOT execute."""
     try:
         metadata = get_metadata(request.model)
     except KeyError as exc:
@@ -244,20 +245,22 @@ def _run_query(request: QueryRequest, row_limit: int):
         built = build_query(metadata, request, row_limit=row_limit)
     except QueryValidationError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    display_names = [
+        request.titles.get(c) or metadata.get_field(c).display_name
+        for c in request.columns
+    ]
+    return built, display_names
 
+
+def _run_query(request: QueryRequest, row_limit: int):
+    """Shared validation + execution for /preview and /export."""
+    built, display_names = _build_validated(request, row_limit)
     try:
         result_columns, rows = run_select(built.sql, built.params)
     except Exception as exc:  # pragma: no cover - surfaced to the client
         raise HTTPException(
             status_code=502, detail=f"Database error: {exc}"
         ) from exc
-
-    # Header labels: use the per-column Title override if supplied, else the
-    # friendly display name from metadata.
-    display_names = [
-        request.titles.get(c) or metadata.get_field(c).display_name
-        for c in request.columns
-    ]
     return request.columns, display_names, rows
 
 
@@ -350,8 +353,9 @@ def analyze(request: QueryRequest) -> AnalysisResponse:
 
 @api.post("/export")
 def export(request: QueryRequest) -> StreamingResponse:
-    """Return a downloadable .xlsx for the report (capped at EXPORT_ROW_LIMIT)."""
-    columns, display_names, rows = _run_query(request, settings.export_row_limit)
+    """Return a downloadable .xlsx (capped at 100 000 rows to stay in memory budget)."""
+    excel_row_limit = min(settings.export_row_limit, 400_000)
+    columns, display_names, rows = _run_query(request, excel_row_limit)
     content = excel_export.build_workbook(display_names, rows)
 
     filename = f"report_{datetime.utcnow():%Y%m%d_%H%M%S}.xlsx"
@@ -366,15 +370,23 @@ def export(request: QueryRequest) -> StreamingResponse:
 
 @api.post("/export/csv")
 def export_csv(request: QueryRequest) -> StreamingResponse:
-    """Return a downloadable .csv for the report (capped at EXPORT_ROW_LIMIT)."""
-    columns, display_names, rows = _run_query(request, settings.export_row_limit)
-    buffer = io.StringIO()
-    writer = csv.writer(buffer)
-    writer.writerow(display_names)
-    writer.writerows(rows)
+    """Stream a CSV without loading the full result set into memory."""
+    built, display_names = _build_validated(request, settings.export_row_limit)
+
+    def _generate():
+        # Header row
+        buf = io.StringIO()
+        csv.writer(buf).writerow(display_names)
+        yield buf.getvalue()
+        # Data rows — fetched in batches so memory stays flat
+        for batch in stream_rows(built.sql, built.params):
+            buf = io.StringIO()
+            csv.writer(buf).writerows(batch)
+            yield buf.getvalue()
+
     filename = f"report_{datetime.utcnow():%Y%m%d_%H%M%S}.csv"
     return StreamingResponse(
-        iter([buffer.getvalue()]),
+        _generate(),
         media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
