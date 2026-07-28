@@ -628,7 +628,7 @@
       {
         "display_name": "Account",
         "column_name": "Account",
-        "data_type": "string",
+        "data_type": "number",
         "group": "Account",
         "aggregate": "none"
       },
