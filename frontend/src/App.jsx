@@ -455,15 +455,24 @@ export default function App() {
       setFilters(
         validFilters.map((f) => {
           const meta = operatorMeta(f.operator);
+          const savedValues = Array.isArray(f.values) ? f.values : [];
           return {
             id: nextId(),
             enabled: true,
             column: f.column,
             operator: f.operator,
             value: meta.valueMode === "single" ? f.value ?? "" : "",
-            values: meta.valueMode === "range" ? f.values ?? ["", ""] : ["", ""],
+            // "range" needs a 2-slot array; "list" (in_list) must restore the
+            // saved selections so the In-list picker — which binds to
+            // `filter.values` — shows them again on reopen.
+            values:
+              meta.valueMode === "range"
+                ? f.values ?? ["", ""]
+                : meta.valueMode === "list"
+                ? savedValues
+                : ["", ""],
             listText:
-              meta.valueMode === "list" ? (f.values || []).join(", ") : "",
+              meta.valueMode === "list" ? savedValues.map(String).join(", ") : "",
           };
         })
       );
