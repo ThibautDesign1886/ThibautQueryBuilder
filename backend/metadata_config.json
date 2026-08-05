@@ -536,6 +536,13 @@
         "aggregate": "none"
       },
       {
+        "display_name": "Region",
+        "column_name": "region",
+        "data_type": "string",
+        "group": "Salesperson & Manager",
+        "aggregate": "none"
+      },
+      {
         "display_name": "Invoice Quantity",
         "column_name": "InvoiceQuantity",
         "data_type": "number",
