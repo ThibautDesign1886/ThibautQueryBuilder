@@ -88,29 +88,8 @@
         "aggregate": "none"
       },
       {
-        "display_name": "Customer Number",
-        "column_name": "CustomerNumber",
-        "data_type": "string",
-        "group": "Customer",
-        "aggregate": "none"
-      },
-      {
-        "display_name": "Customersequence",
-        "column_name": "CustomerSequence",
-        "data_type": "number",
-        "group": "Customer",
-        "aggregate": "count"
-      },
-      {
         "display_name": "Currency Code",
         "column_name": "CurrencyCode",
-        "data_type": "string",
-        "group": "Customer",
-        "aggregate": "none"
-      },
-      {
-        "display_name": "Customer Country",
-        "column_name": "CustomerCountry",
         "data_type": "string",
         "group": "Customer",
         "aggregate": "none"
@@ -165,41 +144,6 @@
         "aggregate": "none"
       },
       {
-        "display_name": "Customer Email Address",
-        "column_name": "CustomerEmailAddress",
-        "data_type": "string",
-        "group": "Customer",
-        "aggregate": "none"
-      },
-      {
-        "display_name": "Customer Phone",
-        "column_name": "CustomerPhone",
-        "data_type": "string",
-        "group": "Customer",
-        "aggregate": "none"
-      },
-      {
-        "display_name": "Customer Group",
-        "column_name": "CustomerGroup",
-        "data_type": "string",
-        "group": "Customer",
-        "aggregate": "none"
-      },
-      {
-        "display_name": "Customer Location Area",
-        "column_name": "CustomerLocationArea",
-        "data_type": "string",
-        "group": "Customer",
-        "aggregate": "none"
-      },
-      {
-        "display_name": "Customer Ranking",
-        "column_name": "CustomerRanking",
-        "data_type": "string",
-        "group": "Customer",
-        "aggregate": "none"
-      },
-      {
         "display_name": "Customer End Type",
         "column_name": "CustomerEndType",
         "data_type": "string",
@@ -221,91 +165,91 @@
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Customer Number",
+        "display_name": "Customer Number",
         "column_name": "BillToCustomerNumber",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Customer Name",
+        "display_name": "Customer Name",
         "column_name": "BillToCustomerName",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Address1",
+        "display_name": "Address1",
         "column_name": "BillToAddress1",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Address2",
+        "display_name": "Address2",
         "column_name": "BillToAddress2",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To City",
+        "display_name": "City",
         "column_name": "BillToCity",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To State",
+        "display_name": "State",
         "column_name": "BillToState",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Zippostal Code",
+        "display_name": "Zippostal Code",
         "column_name": "BillToZIPPostalCode",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To County",
+        "display_name": "County",
         "column_name": "BillToCounty",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Country",
+        "display_name": "Country",
         "column_name": "BillToCountry",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To External Email",
+        "display_name": "External Email",
         "column_name": "BillToExternalEmail",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Phone",
+        "display_name": "Phone",
         "column_name": "BillToPhone",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Price Code",
+        "display_name": "Price Code",
         "column_name": "BillToPriceCode",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Price Code Description",
+        "display_name": "Price Code Description",
         "column_name": "BillToPriceCodeDescription",
         "data_type": "string",
         "group": "Bill To",
@@ -319,28 +263,28 @@
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Ranking",
+        "display_name": "Ranking",
         "column_name": "BillToRanking",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Create Date",
+        "display_name": "Create Date",
         "column_name": "BillToCreateDate",
         "data_type": "date",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Create Year",
+        "display_name": "Create Year",
         "column_name": "BillToCreateYear",
         "data_type": "string",
         "group": "Bill To",
         "aggregate": "none"
       },
       {
-        "display_name": "Bill To Create Month Number",
+        "display_name": "Create Month Number",
         "column_name": "BilltoCreateMonthNumber",
         "data_type": "string",
         "group": "Bill To",

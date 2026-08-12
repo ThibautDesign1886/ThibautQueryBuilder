@@ -81,7 +81,18 @@ def group_for(column: str) -> str:
 
 
 # Columns to leave out of the report entirely (case-insensitive, by name).
-EXCLUDE_COLUMNS = {"invoicesequence"}
+EXCLUDE_COLUMNS = {
+    "invoicesequence",
+    # Customer attributes removed from the model (see metadata_config.json).
+    "customernumber",
+    "customersequence",
+    "customercountry",
+    "customeremailaddress",
+    "customerphone",
+    "customergroup",
+    "customerlocationarea",
+    "customerranking",
+}
 
 # Words that mark a numeric column as a true measure (safe to SUM).
 _MEASURE_KEYWORDS = (
