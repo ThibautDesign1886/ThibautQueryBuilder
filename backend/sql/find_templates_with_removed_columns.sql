@@ -1,6 +1,6 @@
 -- =============================================================================
--- Read-only check: which saved templates still reference columns that were
--- removed from the sales model in metadata_config.json?
+-- Read-only check: which saved templates still reference sales-model columns
+-- that were removed or renamed in metadata_config.json?
 --
 -- app/query_builder.py validates every column against the model whitelist, so a
 -- template that still lists a removed column fails with "Column not allowed"
@@ -15,7 +15,9 @@ INSERT INTO @removed (column_name) VALUES
     (N'SalesOrderRelease'),
     (N'PMTCode'),
     (N'Category'),
-    (N'FamilyCodeDescription');
+    (N'FamilyCodeDescription'),
+    -- Renamed in the master table: CostAmount -> TotalCostAmount.
+    (N'CostAmount');
 
 SELECT  t.id,
         t.name,

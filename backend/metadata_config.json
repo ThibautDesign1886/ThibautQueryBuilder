@@ -81,6 +81,13 @@
         "aggregate": "none"
       },
       {
+        "display_name": "Contract Order Flag",
+        "column_name": "ContractOrderFlag",
+        "data_type": "boolean",
+        "group": "Sales Order",
+        "aggregate": "none"
+      },
+      {
         "display_name": "Currency Code",
         "column_name": "CurrencyCode",
         "data_type": "string",
@@ -494,8 +501,15 @@
         "aggregate": "sum"
       },
       {
-        "display_name": "Cost Amount",
-        "column_name": "CostAmount",
+        "display_name": "Total Cost Amount",
+        "column_name": "TotalCostAmount",
+        "data_type": "number",
+        "group": "Financials",
+        "aggregate": "sum"
+      },
+      {
+        "display_name": "Native Amount",
+        "column_name": "NativeAmount",
         "data_type": "number",
         "group": "Financials",
         "aggregate": "sum"
@@ -510,6 +524,13 @@
       {
         "display_name": "Product Material Margin",
         "column_name": "ProductMaterialMargin",
+        "data_type": "number",
+        "group": "Financials",
+        "aggregate": "sum"
+      },
+      {
+        "display_name": "Total Material Margin",
+        "column_name": "TotalMaterialMargin",
         "data_type": "number",
         "group": "Financials",
         "aggregate": "sum"

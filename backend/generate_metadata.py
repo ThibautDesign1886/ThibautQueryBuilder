@@ -54,7 +54,8 @@ _GROUP_RULES = [
     ("Customer", lambda c: c.startswith("customer")
         or c.startswith("masteraccount") or "currency" in c),
     ("Invoice", lambda c: c.startswith("invoice")),
-    ("Sales Order", lambda c: c.startswith("salesorder")),
+    ("Sales Order", lambda c: c.startswith("salesorder")
+        or c.startswith("contractorder") or c.startswith("orderdate")),
     ("Salesperson & Manager", lambda c: "salesperson" in c or "salesmanager" in c),
     ("Item & Product", lambda c: c.startswith("item") or c.startswith("alternateitem")
         or c.startswith("product") or c.startswith("family")
