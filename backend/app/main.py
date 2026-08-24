@@ -17,6 +17,7 @@ POST /api/export         -> downloadable .xlsx
 POST /api/templates      -> save a report template
 GET  /api/templates      -> list saved report templates
 GET  /api/templates/{id} -> load a saved template
+DELETE /api/templates/{id} -> delete a saved template
 
 Access control
 --------------
@@ -468,11 +469,28 @@ def record_template_run(template_id: int, request: Request) -> None:
         ) from exc
 
 
+def _is_permission_denied(exc: Exception) -> bool:
+    """
+    True when a driver error is SQL Server's "permission was denied on the
+    object" (error 229) — i.e. the app login is missing a GRANT rather than the
+    request being malformed.
+    """
+    text = str(exc).lower()
+    return "permission was denied" in text or "(229)" in text
+
+
 @api.delete("/templates/{template_id}", status_code=204)
 def delete_template(template_id: int) -> None:
     try:
         deleted = templates_store.delete_template(template_id)
     except Exception as exc:  # pragma: no cover
+        if _is_permission_denied(exc):
+            raise HTTPException(
+                status_code=403,
+                detail="This app's database login is not permitted to delete report "
+                       "templates. A database administrator needs to run "
+                       "backend/sql/grant_template_delete.sql on this database.",
+            ) from exc
         raise HTTPException(
             status_code=502, detail=f"Could not delete template: {exc}"
         ) from exc

@@ -2,7 +2,8 @@
 Saved report templates — persisted to a SQL Server table (dbo.report_templates).
 
 Run backend/sql/create_templates_table.sql once to create the table and grant
-the app user SELECT, INSERT, UPDATE on it.
+the app user SELECT, INSERT, UPDATE, DELETE on it. Databases created before
+the delete feature also need backend/sql/grant_template_delete.sql.
 
 Table shape:
     id          INT IDENTITY PK

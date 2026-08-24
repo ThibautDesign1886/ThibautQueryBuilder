@@ -92,6 +92,11 @@ EXCLUDE_COLUMNS = {
     "customergroup",
     "customerlocationarea",
     "customerranking",
+    # Sales columns removed from the column picker (see metadata_config.json).
+    "salesorderrelease",
+    "pmtcode",
+    "category",
+    "familycodedescription",
 }
 
 # Words that mark a numeric column as a true measure (safe to SUM).

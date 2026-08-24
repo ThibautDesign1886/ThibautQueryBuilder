@@ -3,11 +3,11 @@
 -- Run this once against your production (and dev) SQL Server database.
 --
 -- The DB user used by the app needs:
---   SELECT, INSERT, UPDATE on dbo.report_templates
+--   SELECT, INSERT, UPDATE, DELETE on dbo.report_templates
 --
 -- If your app user is currently read-only on the master table, grant write
 -- access to this table only:
---   GRANT SELECT, INSERT, UPDATE ON dbo.report_templates TO <app_user>;
+--   GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.report_templates TO <app_user>;
 -- =============================================================================
 
 IF NOT EXISTS (
@@ -38,9 +38,10 @@ GO
 
 -- =============================================================================
 -- Permissions
--- sfread needs SELECT, INSERT, UPDATE to save and load templates.
+-- sfread needs SELECT, INSERT, UPDATE to save and load templates, and
+-- DELETE to remove them from the Reports page.
 -- =============================================================================
-GRANT SELECT, INSERT, UPDATE ON dbo.report_templates TO sfread;
+GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.report_templates TO sfread;
 GO
 
 -- =============================================================================

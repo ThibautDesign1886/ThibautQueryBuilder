@@ -74,13 +74,6 @@
         "aggregate": "count"
       },
       {
-        "display_name": "Sales Order Release",
-        "column_name": "SalesOrderRelease",
-        "data_type": "string",
-        "group": "Sales Order",
-        "aggregate": "none"
-      },
-      {
         "display_name": "Order Date",
         "column_name": "OrderDate",
         "data_type": "date",
@@ -326,13 +319,6 @@
         "aggregate": "none"
       },
       {
-        "display_name": "Pmtcode",
-        "column_name": "PMTCode",
-        "data_type": "string",
-        "group": "Item & Product",
-        "aggregate": "none"
-      },
-      {
         "display_name": "Book Collection",
         "column_name": "BookCollection",
         "data_type": "string",
@@ -363,13 +349,6 @@
       {
         "display_name": "Family Code",
         "column_name": "FamilyCode",
-        "data_type": "string",
-        "group": "Item & Product",
-        "aggregate": "none"
-      },
-      {
-        "display_name": "Family Code Description",
-        "column_name": "FamilyCodeDescription",
         "data_type": "string",
         "group": "Item & Product",
         "aggregate": "none"
@@ -431,13 +410,6 @@
         "aggregate": "none"
       },
       {
-        "display_name": "Category",
-        "column_name": "Category",
-        "data_type": "string",
-        "group": "Item & Product",
-        "aggregate": "none"
-      },
-      {
         "display_name": "Salesperson Number",
         "column_name": "HistoricalSalespersonNumber",
         "data_type": "string",
@@ -452,7 +424,7 @@
         "aggregate": "none"
       },
       {
-        "display_name": "Historical Salesperson Email",
+        "display_name": "Salesperson Email",
         "column_name": "HistoricalSalespersonEmail",
         "data_type": "string",
         "group": "Salesperson & Manager",
