@@ -74,6 +74,13 @@
         "aggregate": "count"
       },
       {
+        "display_name": "Customer PO",
+        "column_name": "CustomerPO",
+        "data_type": "string",
+        "group": "Sales Order",
+        "aggregate": "none"
+      },
+      {
         "display_name": "Order Date",
         "column_name": "OrderDate",
         "data_type": "date",

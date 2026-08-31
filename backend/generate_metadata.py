@@ -51,11 +51,14 @@ _SAFE_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 _GROUP_RULES = [
     ("Ship To", lambda c: c.startswith("shipto")),
     ("Bill To", lambda c: c.startswith("billto")),
-    ("Customer", lambda c: c.startswith("customer")
+    # customerpo* is the customer's PO on the order, so it belongs with the
+    # order fields rather than the customer master fields.
+    ("Customer", lambda c: (c.startswith("customer") and not c.startswith("customerpo"))
         or c.startswith("masteraccount") or "currency" in c),
     ("Invoice", lambda c: c.startswith("invoice")),
     ("Sales Order", lambda c: c.startswith("salesorder")
-        or c.startswith("contractorder") or c.startswith("orderdate")),
+        or c.startswith("contractorder") or c.startswith("orderdate")
+        or c.startswith("customerpo")),
     ("Salesperson & Manager", lambda c: "salesperson" in c or "salesmanager" in c),
     ("Item & Product", lambda c: c.startswith("item") or c.startswith("alternateitem")
         or c.startswith("product") or c.startswith("family")
