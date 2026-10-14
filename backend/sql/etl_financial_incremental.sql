@@ -67,13 +67,18 @@ SELECT
     l.consolidated                                  AS Consolidated
 
 FROM dbo.ODS_CSI_Syteline_Financial_ledger_mst AS l
+-- Common tables hold one row per site; every join must match on site_ref or
+-- each ledger line fans out once per site (TBUS + RHUS = 2x).
 LEFT JOIN dbo.ODS_CSI_Syteline_Common_custaddr_mst AS c
-    ON  LTRIM(RTRIM(l.vend_num)) = LTRIM(RTRIM(c.cust_num))
+    ON  c.site_ref = l.site_ref
+    AND LTRIM(RTRIM(l.vend_num)) = LTRIM(RTRIM(c.cust_num))
     AND c.cust_seq = 0
 LEFT JOIN dbo.ODS_CSI_Syteline_Common_vendaddr_mst AS v
-    ON  LTRIM(RTRIM(l.vend_num)) = LTRIM(RTRIM(v.vend_num))
+    ON  v.site_ref = l.site_ref
+    AND LTRIM(RTRIM(l.vend_num)) = LTRIM(RTRIM(v.vend_num))
 LEFT JOIN dbo.ODS_CSI_Syteline_Common_chart_mst AS ch
-    ON  ch.acct = l.acct
+    ON  ch.site_ref = l.site_ref
+    AND ch.acct = l.acct
 WHERE l.trans_date > '2026-07-01'
 ORDER BY
     l.trans_date DESC,

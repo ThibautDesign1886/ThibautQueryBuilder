@@ -633,6 +633,13 @@
         "aggregate": "none"
       },
       {
+        "display_name": "Create Date",
+        "column_name": "CreateDate",
+        "data_type": "date",
+        "group": "Transaction",
+        "aggregate": "none"
+      },
+      {
         "display_name": "Site",
         "column_name": "Site",
         "data_type": "string",
@@ -684,6 +691,20 @@
       {
         "display_name": "Credit (Foreign)",
         "column_name": "CreditForeign",
+        "data_type": "number",
+        "group": "Amounts",
+        "aggregate": "sum"
+      },
+      {
+        "display_name": "Net Amount (Domestic)",
+        "column_name": "NetDomesticAmount",
+        "data_type": "number",
+        "group": "Amounts",
+        "aggregate": "sum"
+      },
+      {
+        "display_name": "Net Amount (Foreign)",
+        "column_name": "NetForeignAmount",
         "data_type": "number",
         "group": "Amounts",
         "aggregate": "sum"
